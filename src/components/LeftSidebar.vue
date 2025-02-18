@@ -1,14 +1,12 @@
 <template>
     <aside class="left-sidebar">
-      <WaterQualityPanel />
+      <AgriculturalOverview />
       <EquipmentStatusPanel />
       <AlarmInfoPanel />
-     
     </aside>
   </template>
-  
   <script setup>
-  import WaterQualityPanel from './WaterQualityPanel.vue';
+  import AgriculturalOverview from './AgriculturalOverview.vue';
   import EquipmentStatusPanel from './EquipmentStatusPanel.vue';
   import AlarmInfoPanel from './AlarmInfoPanel.vue';
   import ProductionAnalysisPanel from './ProductionAnalysisPanel.vue';

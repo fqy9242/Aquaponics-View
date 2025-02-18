@@ -3,6 +3,9 @@ import { agriculturalAreaSummaryThisYearApi } from '@/apis/overview';
 import { onMounted, ref } from 'vue';
 const agriculturalAreaSummary = ref(null)
 
+
+
+
 // 获取农业概况数据
 const agriculturalAreaSummaryThisYear = async () => {
     const res = await agriculturalAreaSummaryThisYearApi()
