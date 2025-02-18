@@ -10,4 +10,5 @@
   import EquipmentStatusPanel from './EquipmentStatusPanel.vue';
   import AlarmInfoPanel from './AlarmInfoPanel.vue';
   import ProductionAnalysisPanel from './ProductionAnalysisPanel.vue';
+  import { useComponentStore } from '@/stores/component';
   </script>

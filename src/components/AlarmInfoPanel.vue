@@ -41,7 +41,7 @@ onMounted(() => {
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
-      style="overflow: hidden; height: 150px; position: relative;">
+      style="overflow: hidden; height: 229px; position: relative;">
       <el-table :data="warningData" height="300" style="width: 100%" class="custom-alarm-table">
         <el-table-column prop="cropBatch" label="批次" width="130" />
         <el-table-column prop="partitionInfo" label="分区" width="60" />

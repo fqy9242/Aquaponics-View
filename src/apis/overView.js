@@ -20,3 +20,9 @@ export const agriculturalAreaSummaryThisYearApi = () => {
     url: "/analysis/overview/agriculturalAreaSummaryThisYear",
   });
 }
+// 获取种植地块，养殖鱼棚地理分布热力值
+export const getLandGeoHeatmapApi = () => {
+  return request({
+    url: "/analysis/overview/landGeoHeatmap",
+  });
+};
