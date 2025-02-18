@@ -14,3 +14,9 @@ export const getDeviceWarningApi = () => {
       method: "get",
     });
 }
+// 获取种植面积，养殖面积，以及年同比
+export const agriculturalAreaSummaryThisYearApi = () => {
+  return request({
+    url: "/analysis/overview/agriculturalAreaSummaryThisYear",
+  });
+}
