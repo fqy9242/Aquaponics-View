@@ -1,186 +1,56 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
 import * as echarts from 'echarts';
-import { getDeviceInfoApi } from "@/apis/overView";
+import { onMounted, ref } from 'vue';
 
-const deviceInfo = ref(null);
-let totalDeviceChart, onlineDeviceChart, onlineDeviceRateChart;
-
-// 获取设备总览信息
-const getDeviceInfo = async () => {
-  try {
-    const res = await getDeviceInfoApi();
-    if (res && res.data) {
-      console.log("res.data:", res.data);
-      deviceInfo.value = res.data;
-    } else {
-      console.error("响应数据格式不正确", res);
-    }
-  } catch (error) {
-    console.error("获取设备信息失败", error);
-  }
-};
-
-const updateCharts = () => {
-  if (deviceInfo.value) {
-    const totalDeviceOption = {
-      title: {
-        text: '设备总数',
-        subtext: deviceInfo.value.totalDevice || '0',
-        x: 'center',
-        y: 'center',
-        textStyle: {
-          fontSize: 20,
-          color: '#1afa29'
-        },
-        subtextStyle: {
-          fontSize: 16,
-          color: '#1afa29'
-        }
-      },
-      series: [{
-        type: 'pie',
-        radius: ['70%', '90%'],
-        avoidLabelOverlap: false,
-        label: {
-          show: false,
-          position: 'center'
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: '30',
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: {
-          show: false
-        },
-        data: [{
-          value: deviceInfo.value.totalDevice || 0,
-          itemStyle: {
-            color: '#1afa29'
-          }
-        }, {
-          value: 0,
-          itemStyle: {
-            color: '#f0f0f0'
-          }
-        }]
-      }]
-    };
-
-    const onlineDeviceOption = {
-      title: {
-        text: '在线设备',
-        subtext: deviceInfo.value.onlineDevice || '0',
-        x: 'center',
-        y: 'center',
-        textStyle: {
-          fontSize: 20,
-          color: '#1afa29'
-        },
-        subtextStyle: {
-          fontSize: 16,
-          color: '#1afa29'
-        }
-      },
-      series: [{
-        type: 'pie',
-        radius: ['70%', '90%'],
-        avoidLabelOverlap: false,
-        label: {
-          show: false,
-          position: 'center'
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: '30',
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: {
-          show: false
-        },
-        data: [{
-          value: deviceInfo.value.onlineDevice || 0,
-          itemStyle: {
-            color: '#1afa29'
-          }
-        }, {
-          value: deviceInfo.value.totalDevice - deviceInfo.value.onlineDevice || 0,
-          itemStyle: {
-            color: '#f0f0f0'
-          }
-        }]
-      }]
-    };
-
-    const onlineDeviceRateOption = {
-      title: {
-        text: '在线率',
-        subtext: `${((deviceInfo.value.onlineDevice / deviceInfo.value.totalDevice) * 100).toFixed(2) || '0'}%`,
-        x: 'center',
-        y: 'center',
-        textStyle: {
-          fontSize: 20,
-          color: '#1afa29'
-        },
-        subtextStyle: {
-          fontSize: 16,
-          color: '#1afa29'
-        }
-      },
-      series: [{
-        type: 'pie',
-        radius: ['70%', '90%'],
-        avoidLabelOverlap: false,
-        label: {
-          show: false,
-          position: 'center'
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: '30',
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: {
-          show: false
-        },
-        data: [{
-          value: deviceInfo.value.onlineDevice || 0,
-          itemStyle: {
-            color: '#1afa29'
-          }
-        }, {
-          value: deviceInfo.value.totalDevice - deviceInfo.value.onlineDevice || 0,
-          itemStyle: {
-            color: '#f0f0f0'
-          }
-        }]
-      }]
-    };
-
-    totalDeviceChart.setOption(totalDeviceOption);
-    onlineDeviceChart.setOption(onlineDeviceOption);
-    onlineDeviceRateChart.setOption(onlineDeviceRateOption);
-  }
-};
+const chartRef = ref(null);
 
 onMounted(() => {
-  totalDeviceChart = echarts.init(document.getElementById('total_device'));
-  onlineDeviceChart = echarts.init(document.getElementById('online_device'));
-  onlineDeviceRateChart = echarts.init(document.getElementById('online_device_rate'));
-  getDeviceInfo();
-});
-
-watch(deviceInfo, (newVal) => {
-  if (newVal) {
-    updateCharts();
-  }
+  const chart = echarts.init(chartRef.value);
+  const option = {
+    title: {
+      text: '农资农机占比',
+      left: 'center',
+      textStyle: {
+        color: '#333'
+      }
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      top: '10%',
+      left: 'center',
+      textStyle: {
+        color: '#333'
+      }
+    },
+    series: [
+      {
+        name: '占比',
+        type: 'pie',
+        radius: '50%',
+        data: [
+          { value: 1048, name: '农机' },
+          { value: 735, name: '农资' },
+          { value: 580, name: '其他' }
+        ],
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        },
+        itemStyle: {
+          color: function(params) {
+            const colorList = ['#32b885', '#ff7f50', '#87cefa'];
+            return colorList[params.dataIndex];
+          }
+        }
+      }
+    ]
+  };
+  chart.setOption(option);
 });
 </script>
 
@@ -202,14 +72,9 @@ watch(deviceInfo, (newVal) => {
       <!-- 设备信息 -->
       <h2 class="panel-title">农资农机</h2>
     </div>
-    <div class="device_info_container">
-      <div id="total_device" class="device_info_charts"></div>
-      <div id="online_device" class="device_info_charts"></div>
-      <div id="online_device_rate" class="device_info_charts"></div>
+    <div class="data_grid">
+      <div ref="chartRef" style="width: 100%; height: 400px;"></div>
     </div>
-
-
-    <!-- <div ref=" chartRef" style="width: 100%; height: 210px;"></div> -->
   </section>
 </template>
 
@@ -223,18 +88,14 @@ watch(deviceInfo, (newVal) => {
   font-size: 1.5rem;
   font-weight: bold;
   color: #D3D3D3;
-  /* margin-bottom: 15px; */
   padding-bottom: 8px;
   border-bottom: 2px solid rgba(85, 139, 47, 0.3);
   text-align: center;
   margin-left: 10px;
 }
-.device_info_container {
+.data_grid {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 20px;
 }
-.device_info_charts {
-    width: 33%;
-    height: 210px;
-}
-</style>    
+</style>
