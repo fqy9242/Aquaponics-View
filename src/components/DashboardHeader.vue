@@ -1,7 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useComponentStore } from '@/stores/component';
+import { useRouter } from 'vue-router';
+
 const componentStore = useComponentStore();
+const router = useRouter();
 const tabs = ref(['整体情况', '种植模块', '养殖模块']);
 
 // 监听 componentStore.currentTab 的变化
@@ -14,14 +17,29 @@ const currentTab = ref(componentStore.currentTab);
 watch(currentTab, (newTab) => {
   componentStore.currentTab = newTab;
 });
+
+// 切换路由
+const switchTab = (index) => {
+  currentTab.value = index;
+  switch (index) {
+    case 0:
+      router.push('/');
+      break;
+    case 1:
+      router.push('/agriculture');
+      break;
+    case 2:
+      router.push('/fish');
+      break;
+  }
+};
 </script>
 
 <template>
   <!-- 多个大屏切换的 tab -->
   <nav class="tab-nav">
     <ul>
-      <li v-for="(tab, index) in tabs" :key="index" :class="{ active: currentTab === index }"
-        @click="currentTab = index">
+      <li v-for="(tab, index) in tabs" :key="index" :class="{ active: currentTab === index }" @click="switchTab(index)">
         {{ tab }}
       </li>
     </ul>
@@ -46,6 +64,6 @@ watch(currentTab, (newTab) => {
 
 .tab-nav li.active {
   font-weight: bold;
-  border-bottom: 2px solid #000;
+  border-bottom: 2px solid #1eda09;
 }
 </style>
