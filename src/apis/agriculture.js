@@ -6,3 +6,11 @@ export const harvestListApi = () => {
     method: "get",
   });
 };
+
+// 农产品采摘优秀率TOP10
+export const getPickingExcellenceRateTop10Api = () => {
+  return request({
+    url: "/analysis/agriculture/pickingExcellenceRateTop10",
+    method: "get",
+  });
+}

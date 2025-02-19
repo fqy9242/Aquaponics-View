@@ -1,16 +1,16 @@
 <template>
   <aside class="right-sidebar">
-    <WeatherStationPanel />
+    <OverviewRightFirst />
     <ProductionAnalysisPanel />
     <!-- <AeratorControlPanel /> -->
     <AgricultureWordCloud />
-    
+
   </aside>
 </template>
   
   <script setup>
-  import WeatherStationPanel from './WeatherStationPanel.vue';
+  import OverviewRightFirst from '@/components/OverviewRightFirst.vue';
   // import AeratorControlPanel from './AeratorControlPanel.vue';
-  import AgricultureWordCloud from '@/components/AgricultureWordCloud.vue';
+  import AgricultureWordCloud from '@/components/OverviewRightThirPanel.vue';
   import ProductionAnalysisPanel from './ProductionAnalysisPanel.vue';
   </script>

@@ -216,7 +216,7 @@ watch(deviceInfo, (newVal) => {
 <style scoped>
 .icon-text-container {
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
 }
 .panel-title {

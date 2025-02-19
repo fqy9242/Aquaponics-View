@@ -1,25 +1,27 @@
 <script setup>
+/**
+ * @description 农业概况左侧第一个面板
+ * @date 2025-02-19
+ * @author qin hui tong
+ */
 import { agriculturalAreaSummaryThisYearApi } from '@/apis/overview';
 import { onMounted, ref } from 'vue';
-const agriculturalAreaSummary = ref(null)
-
-
-
+const agriculturalAreaSummary = ref(null);
 
 // 获取农业概况数据
 const agriculturalAreaSummaryThisYear = async () => {
-    const res = await agriculturalAreaSummaryThisYearApi()
-    agriculturalAreaSummary.value = res.data
-}
+    const res = await agriculturalAreaSummaryThisYearApi();
+    agriculturalAreaSummary.value = res.data;
+};
 
 onMounted(() => {
-    agriculturalAreaSummaryThisYear()
-})
+    agriculturalAreaSummaryThisYear();
+});
 </script>
 
 <template>
     <section class="panel-box water-quality-panel">
-        <div style="display: flex; flex-direction: column; align-items: center;justify-content: center;">
+        <div class="header-container">
             <svg t="1739709683698" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                 p-id="1510" width="30" height="30">
                 <path
@@ -50,9 +52,9 @@ onMounted(() => {
                     <img src="@/assets/imgs/ecological_agriculture.png" draggable="false">
                     <div class="overview-text">
                         <h1>总种植面积</h1>
-                        <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalCultivation + ' 亩' }} </h1>
+                        <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalCultivation + ' 亩' }}
+                        </h1>
                     </div>
-                    <!-- <div class="divider"></div> -->
                     <el-divider direction="vertical" />
                     <h1 class="year-rate-text">年同比</h1>
                     <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearCultivationRate }}</span>
@@ -64,7 +66,7 @@ onMounted(() => {
                     <img src="@/assets/imgs/breed.png" draggable="false">
                     <div class="overview-text">
                         <h1>总养殖面积</h1>
-                        <h1>{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }} </h1>
+                        <h1>{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }}</h1>
                     </div>
                     <el-divider direction="vertical" />
                     <h1 class="year-rate-text">年同比</h1>
@@ -76,6 +78,24 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.header-container {
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    margin-bottom: 20px;
+}
+
+.panel-box {
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+}
+
+.panel-title {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
 .year-rate-text {
     font-family: '黑体';
     color: #32b885;
@@ -91,19 +111,19 @@ onMounted(() => {
     border-color: #46a776;
     border-width: 2px;
     filter: blur(2px);
-
 }
 
 .data_grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
+
     h1 {
-            font-size: 1.2em;
-            /* 减小字体大小 */
-            color: #ffffff;
-            margin-bottom: 15px;
-        }
+        font-size: 1.2em;
+        /* 减小字体大小 */
+        color: #ffffff;
+        margin-bottom: 15px;
+    }
 }
 
 img {
@@ -129,7 +149,6 @@ h1 {
 
 .breed {
     margin-top: -20px;
-    /* 调整 breed 和 plant 之间的间距 */
 }
 
 .overview-text {
@@ -149,9 +168,7 @@ h1 {
     width: 100%;
     height: 100%;
     opacity: 0.4;
-    /* 调整图表背景的透明度 */
     z-index: -1;
-    /* 将图表置于内容下方 */
 }
 
 .mini-chart {
@@ -161,12 +178,7 @@ h1 {
 
 .data-point-label {
     font-size: 0.3rem;
-    /* 更小的字体 */
     fill: #ffffff;
-    /* 柔和的文本颜色，与 data-value 颜色一致 */
     opacity: 1;
-    /* 稍微降低透明度，使其不那么突出 */
-    /* text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);  可以添加可选的文字阴影 */
-    /* pointer-events: none;  防止文本标签干扰鼠标事件（如果需要） */
 }
 </style>
