@@ -26,3 +26,11 @@ export const getLandGeoHeatmapApi = () => {
     url: "/analysis/overview/landGeoHeatmap",
   });
 };
+
+
+// 获取养殖鱼棚，养殖鱼棚地理分布热力值
+export const getFishPastureGeoHeatApi = () => {
+  return request({
+    url: "/analysis/overview/fishPastureGeoHeatmap",
+  });
+};
