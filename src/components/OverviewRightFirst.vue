@@ -102,7 +102,7 @@ onUnmounted(() => {
         <span class="data-unit">m/s</span>
       </div>
     </div>
-    <div class="line-chart small-chart">
+    <!-- <div class="line-chart small-chart">
       <div class="chart-title">1#空气温度</div>
       <div class="line-graph">
         <div class="line"></div>
@@ -113,6 +113,6 @@ onUnmounted(() => {
         <div class="point" style="left: 70%; bottom: 85%;"></div>
         <div class="point" style="left: 85%; bottom: 75%;"></div>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>

@@ -27,8 +27,8 @@ onMounted(() => {
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
-      style="overflow: hidden; height: 229px; position: relative;">
-      <el-table :data="harvestListData" height="300" style="width: 100%" class="custom-alarm-table">
+      style="overflow: hidden; height: 300px; position: relative;">
+      <el-table :data="harvestListData" height="310" style="width: 100%" class="custom-alarm-table">
         <el-table-column prop="name" label="产物名称" width="100" />
         <el-table-column prop="weight" label="重量" width="80" />
         <el-table-column prop="harvestQuality" label="采摘质量" width="80" />

@@ -86,7 +86,7 @@ watch(graphData, (newData) => {
       </svg>
       <h2 class="panel-title">农产品采摘优秀率TOP10</h2>
     </div>
-    <div id="harvest-chart" style="width: 100%; height: 390px;"></div>
+    <div id="harvest-chart" style="width: 100%; height: 330px;"></div>
   </section>
 </template>
 
