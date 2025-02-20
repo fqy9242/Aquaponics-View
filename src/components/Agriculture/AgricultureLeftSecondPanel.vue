@@ -19,8 +19,14 @@ watch(graphData, (newData) => {
     const chartDom = document.getElementById('harvest-chart');
     const myChart = echarts.init(chartDom);
     const option = {
-      title: {
-        text: '农产品采摘优秀率TOP10'
+      // title: {
+      //   text: '农产品采摘优秀率TOP10'
+      // },
+      grip: {
+        left: '30%',
+        right: '1%',
+        bottom: '3%',
+        containLabel: true
       },
       tooltip: {
         trigger: 'axis',
@@ -30,17 +36,33 @@ watch(graphData, (newData) => {
       },
       xAxis: {
         type: 'value',
-        boundaryGap: [0, 0.01]
+        max: 100, // 设置横轴最大值为100
+        boundaryGap: [0, 0.01],
+        axisLabel: {
+          color: '#FFFFFF', // 设置横轴字体颜色为白色
+          fontWeight: 'bold' // 设置横轴字体加粗
+        }
       },
       yAxis: {
         type: 'category',
-        data: newData.name
+        data: newData.name,
+        axisLabel: {
+          color: '#FFFFFF', // 设置纵轴字体颜色为白色
+          fontWeight: 'bold' // 设置纵轴字体加粗
+        }
       },
       series: [
         {
           name: '优秀率',
           type: 'bar',
-          data: newData.value
+          data: newData.value,
+          itemStyle: {
+            color: (params) => {
+              const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF', '#FF1493', '#00CED1', '#FFD700'];
+              return colors[params.dataIndex % colors.length];
+            },
+            barBorderRadius: [5, 5, 5, 5] // 设置柱形的圆角
+          }
         }
       ]
     };

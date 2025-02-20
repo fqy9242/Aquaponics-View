@@ -3,7 +3,6 @@
  * by qht at 2025-2-19
  */
 import { ref, onMounted, onUnmounted } from 'vue';
-
 const humidity = ref(0);
 const temperature = ref(0);
 const lightIntensity = ref(0);

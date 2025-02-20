@@ -1,12 +1,12 @@
 <template>
   <aside class="left-sidebar">
-    <AgriculturalOverview />
+    <AgricultureLeftFirstPanel />
     <AgricultureLeftSecondPanel />
     <AgricultureLeftThirt />
   </aside>
 </template>
 <script setup>
-import AgriculturalOverview from '@/components/Agriculture/AgriculturalOverview.vue';
+import AgricultureLeftFirstPanel from '@/components/Agriculture/AgricultureLeftFirstPanel.vue';
 import AgricultureLeftSecondPanel from '@/components/Agriculture/AgricultureLeftSecondPanel.vue';
 import AgricultureLeftThirt from '@/components/Agriculture/AgricultureLeftThirt.vue';
 import ProductionAnalysisPanel from '@/components/Agriculture/ProductionAnalysisPanel.vue';
