@@ -21,3 +21,10 @@ export const getPlantingTaskOverviewApi = (batchId) => {
     method: "get",
   });
 }
+// 获取产量信息
+export const getAllYieldInfoApi = () => {
+  return request({
+    url: "/analysis/agriculture/yieldInfoALl",
+    method: "get",
+  });
+}

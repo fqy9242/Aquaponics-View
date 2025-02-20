@@ -2,16 +2,26 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from "echarts"
 import 'echarts-wordcloud'
-// TODO 后面把词云换成真实的数据
-const chart = ref(null)
+import { getWordCloudApi } from '@/apis/overView'
 
-onMounted(() => {
+const chart = ref(null)
+const wordCloudData = ref([])
+
+const getWordCloud = async () => {
+    const res = await getWordCloudApi()
+    wordCloudData.value = res.data.map(item => ({
+        name: item.name,
+        value: item.count
+    }))
+}
+
+onMounted(async () => {
+    await getWordCloud()
     const container = document.getElementById('container')
     chart.value = echarts.init(container)
 
     const option = {
         title: {
-            // text: '种植/养殖词云',
             left: 'center'
         },
         tooltip: {},
@@ -33,18 +43,7 @@ onMounted(() => {
                     shadowColor: '#333'
                 }
             },
-            data: [
-                { name: '鱼', value: 10000 },
-                { name: '水', value: 6181 },
-                { name: '植物', value: 4386 },
-                { name: '养殖', value: 4055 },
-                { name: '种植', value: 2467 },
-                { name: '生态', value: 2244 },
-                { name: '系统', value: 1898 },
-                { name: '水质', value: 1484 },
-                { name: '循环', value: 1112 },
-                { name: '有机', value: 965 }
-            ]
+            data: wordCloudData.value
         }]
     }
 

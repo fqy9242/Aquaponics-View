@@ -48,7 +48,7 @@ const createChart = (id, title, value) => {
                     borderRadius: 10,
                     width: 10
                 }
-            }
+            },
         }]
     };
     myChart.setOption(option);

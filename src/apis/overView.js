@@ -34,3 +34,9 @@ export const getFishPastureGeoHeatApi = () => {
     url: "/analysis/overview/fishPastureGeoHeatmap",
   });
 };
+// 获取总览词云
+export const getWordCloudApi = () => {
+  return request({
+    url: "/analysis/overview/wordCloud",
+  });
+}
