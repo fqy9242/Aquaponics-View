@@ -14,3 +14,10 @@ export const getPickingExcellenceRateTop10Api = () => {
     method: "get",
   });
 }
+// 获取种植任务总览信息
+export const getPlantingTaskOverviewApi = (batchId) => {
+  return request({
+    url: `/analysis/agriculture/getPlantingTaskOverview/${batchId}`,
+    method: "get",
+  });
+}

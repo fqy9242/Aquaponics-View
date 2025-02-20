@@ -25,7 +25,7 @@ watch(graphData, (newData) => {
       grip: {
         left: '30%',
         right: '1%',
-        bottom: '3%',
+        bottom: '0%',
         containLabel: true
       },
       tooltip: {
@@ -35,6 +35,7 @@ watch(graphData, (newData) => {
         }
       },
       xAxis: {
+        show: false,
         type: 'value',
         max: 100, // 设置横轴最大值为100
         boundaryGap: [0, 0.01],
@@ -61,7 +62,7 @@ watch(graphData, (newData) => {
               const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF', '#FF1493', '#00CED1', '#FFD700'];
               return colors[params.dataIndex % colors.length];
             },
-            barBorderRadius: [5, 5, 5, 5] // 设置柱形的圆角
+            barBorderRadius: [5, 5, 5, 9] // 设置柱形的圆角
           }
         }
       ]
