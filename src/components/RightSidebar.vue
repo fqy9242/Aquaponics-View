@@ -12,5 +12,5 @@
   import OverviewRightFirst from '@/components/OverviewRightFirst.vue';
   // import AeratorControlPanel from './AeratorControlPanel.vue';
   import AgricultureWordCloud from '@/components/OverviewRightThirPanel.vue';
-  import ProductionAnalysisPanel from './ProductionAnalysisPanel.vue';
+  import ProductionAnalysisPanel from './OverviewRightSecondPanel.vue';
   </script>
