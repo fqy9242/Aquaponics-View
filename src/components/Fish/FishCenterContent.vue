@@ -5,7 +5,7 @@
     <!-- <img src="@/assets/imgs/agr1.png" alt=""> -->
     <!-- <BottomGraph /> -->
     <LandGeo />
-    <FishCoopGeo />
+    <AgricultureCenterSecondPanel />
   </main>
 </template>
   
@@ -13,5 +13,5 @@
   // import CameraFeedPanel from './CameraFeedPanel.vue';
   // import BottomGraph from '@/components/BottomGraph.vue'
   import BachGeo from '@/components/LandGeo.vue';
-  import FishCoopGeo from '@/components/FishCoopGeo.vue';
+  import AgricultureCenterSecondPanel from '@/components/Agriculture/AgricultureCenterSecondPanel.vue';
   </script>

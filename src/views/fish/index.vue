@@ -1,8 +1,8 @@
 <script setup>
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import LeftSidebar from '@/components/LeftSidebar.vue';
-import CenterContent from '@/components/CenterContent.vue';
-import RightSidebar from '@/components/RightSidebar.vue';
+import LeftSidebar from '@/components/Fish/FishLeftSidebar.vue';
+import CenterContent from '@/components/Fish/FishCenterContent.vue';
+import RightSidebar from '@/components/fish/FishRightSidebar.vue';
 import BottomBox from '@/components/BottomBox.vue';
 </script>
 <template>

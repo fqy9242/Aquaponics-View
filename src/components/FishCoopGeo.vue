@@ -85,7 +85,7 @@ onMounted(async () => {
 <template>
     <div class="panel-box water-quality-panel">
         <div class="panel-title">养殖鱼棚分布</div>
-        <div id="FishMap" style="height: 422px;"></div>
+        <div id="FishMap" style="height: 450px;"></div>
     </div>
 </template>
 

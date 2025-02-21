@@ -8,8 +8,8 @@
 </template>
 
 <script setup>
-import WeatherStationPanel from '@/components/Fish/WeatherStationPanel.vue';
-// import AeratorControlPanel from '@/components/Fish/AeratorControlPanel.vue';
-import AgricultureWordCloud from '@/components/Fish/AgricultureWordCloud.vue';
-import ProductionAnalysisPanel from '@/components/Fish/ProductionAnalysisPanel.vue';
+import WeatherStationPanel from '@/components/Agriculture/AgricultureRightFirstPanel.vue';
+// import AeratorControlPanel from '@/components/Agriculture/AeratorControlPanel.vue';
+import AgricultureWordCloud from '@/components/Agriculture/AgricultureRightThirdPanel.vue';
+import ProductionAnalysisPanel from '@/components/Agriculture/AgricultureRightSecondPanel.vue';
 </script>

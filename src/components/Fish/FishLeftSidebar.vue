@@ -1,14 +1,14 @@
 <template>
   <aside class="left-sidebar">
-    <AgriculturalOverview />
-    <EquipmentStatusPanel />
-    <AlarmInfoPanel />
+    <FishLeftFirstPanel />
+    <FishLeftSecondPanel />
+    <FishLeftThirt />
   </aside>
 </template>
 <script setup>
-import AgriculturalOverview from '@/components/Fish/AgriculturalOverview.vue';
-import EquipmentStatusPanel from '@/components/Fish/EquipmentStatusPanel.vue';
-import AlarmInfoPanel from '@/components/Fish/AlarmInfoPanel.vue';
-import ProductionAnalysisPanel from '@/components/Fish/ProductionAnalysisPanel.vue';
+import FishLeftFirstPanel from '@/components/Fish/FishLeftFirstPanel.vue';
+import FishLeftSecondPanel from '@/components/Fish/FishLeftSecondPanel.vue';
+import FishLeftThirt from '@/components/Fish/FishLeftThirt.vue';
+import ProductionAnalysisPanel from '@/components/Fish/FishRightSecondPanel.vue';
 import { useComponentStore } from '@/stores/component';
 </script>
