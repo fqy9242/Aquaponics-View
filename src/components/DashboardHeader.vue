@@ -33,6 +33,13 @@ const switchTab = (index) => {
       break;
   }
 };
+
+// 显示当前时间
+const currentTime = ref(new Date().toLocaleString('zh-CN', { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+
+setInterval(() => {
+  currentTime.value = new Date().toLocaleString('zh-CN', { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}, 1000);
 </script>
 
 <template>
@@ -46,6 +53,7 @@ const switchTab = (index) => {
   </nav>
   <header class="dashboard-header">
     <h1 class="header-title">鱼 菜 共 生 数 据 监 控 中 心</h1>
+    <div class="current-time">{{ currentTime }}</div>
   </header>
 </template>
 
@@ -65,5 +73,21 @@ const switchTab = (index) => {
 .tab-nav li.active {
   font-weight: bold;
   border-bottom: 2px solid #1eda09;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-title {
+  margin: 0;
+}
+
+.current-time {
+  font-size: 1rem;
+  color: white;
+  margin-top: 0.5rem;
 }
 </style>

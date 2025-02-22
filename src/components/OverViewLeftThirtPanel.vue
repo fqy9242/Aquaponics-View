@@ -6,7 +6,7 @@ const warningData = ref([]);
 
 const config = ref({
   header: ['批次', '分区', '预警信息', '结果'],
-  headerBGC: '#e14911',
+  headerBGC: 'transparent',
   data: warningData.value,
   index: true,
   columnWidth: [50, 130, 60, 150, 70],
@@ -51,6 +51,7 @@ onMounted(() => {
           p-id="4215" fill="#d81e06"></path>
       </svg>
       <h2 class="panel-title">告警信息</h2>
+    
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
@@ -61,41 +62,39 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 表格整体样式 */
+/* 核心修改部分 */
 :deep(.dv-scroll-board) {
+  /* 表头橙色 */
+  --dv-scroll-board-header-text-color: #FFA500;
+  /* 数据行绿色 */
+  --dv-scroll-board-text-color: #00FF00;
+
+  /* 原有样式 */
   --dv-scroll-board-border-color: transparent;
-  --dv-scroll-board-text-color: #00ff00;
-  --dv-scroll-board-header-text-color: #00ff00;
-  /* 表头文字颜色 */
 }
 
-/* 表头样式 */
+/* 以下为原有样式（保持功能不变） */
 :deep(.dv-scroll-board .header-column) {
   background-color: transparent !important;
   font-size: 16px;
   letter-spacing: 1px;
   border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-  /* 添加底部边框保持可视性 */
 }
 
-/* 行悬浮效果 */
 :deep(.dv-scroll-board .row-item:hover) {
   background-color: rgba(255, 255, 255, 0.9) !important;
   color: #333 !important;
 }
 
-/* 单元格基础样式 */
 :deep(.dv-scroll-board .rows .row-item) {
   background-color: transparent !important;
   transition: all 0.3s ease;
 }
 
-/* 序号列样式 */
 :deep(.dv-scroll-board .index) {
   background-color: rgba(225, 73, 17, 0.3) !important;
 }
 
-/* 滚动条样式 */
 :deep(.dv-scroll-board ::-webkit-scrollbar) {
   width: 6px;
   height: 6px;
@@ -110,7 +109,6 @@ onMounted(() => {
   background-color: transparent;
 }
 
-/* 图标与标题间距 */
 .icon {
   margin-right: 8px;
 }

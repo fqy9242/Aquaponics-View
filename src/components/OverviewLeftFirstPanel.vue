@@ -55,22 +55,27 @@ onMounted(() => {
                         <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalCultivation + ' 亩' }}
                         </h1>
                     </div>
-                    <el-divider direction="vertical" />
-                    <h1 class="year-rate-text">年同比</h1>
-                    <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearCultivationRate }}</span>
+                    <el-divider class="vertical-divider" direction="vertical" style="height: 80px; margin: 0 10px;" />
+                    <div class="rate-container">
+                        <h1 class="year-rate-text">年同比</h1>
+                        <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearCultivationRate }}</span>
+                    </div>
                 </div>
             </div>
+
             <!-- 养殖情况 -->
             <div class="breed">
                 <div class="overview">
                     <img src="@/assets/imgs/breed.png" draggable="false">
                     <div class="overview-text">
                         <h1>总养殖面积</h1>
-                        <h1>{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }}</h1>
+                        <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }}</h1>
                     </div>
-                    <el-divider direction="vertical" />
-                    <h1 class="year-rate-text">年同比</h1>
-                    <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearBreedingRate }}</span>
+                    <el-divider class="vertical-divider" direction="vertical" style="height: 80px; margin: 0 10px;" />
+                    <div class="rate-container">
+                        <h1 class="year-rate-text">年同比</h1>
+                        <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearBreedingRate }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,97 +83,99 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+
 .header-container {
     display: flex;
     align-items: center;
-    /* justify-content: center; */
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 
-
-.year-rate-text {
-    font-family: '黑体';
-    color: #32b885;
+.panel-title {
+    color: #1afa29;
     font-size: 20px;
-}
-
-.year-rate {
-    color: white;
-}
-
-.el-divider {
-    height: 100px;
-    border-color: #46a776;
-    border-width: 2px;
-    filter: blur(2px);
+    margin-left: 12px;
 }
 
 .data_grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-
-    h1 {
-        font-size: 1.2em;
-        /* 减小字体大小 */
-        color: #ffffff;
-        margin-bottom: 15px;
-    }
-}
-
-img {
-    width: 30%;
-    height: 30%;
-    margin-bottom: 20px;
-    /* 调整图片底部间距 */
-}
-
-h1 {
-    font-size: 1.5em;
-    color: #ffffff;
-    /* 深色标题 */
-    margin-bottom: 15px;
+    gap: 25px;
 }
 
 .overview {
     display: flex;
     align-items: center;
-    position: relative;
-    width: 100%;
+    height: 120px;
+    /* padding: 15px; */
+    /* background: rgba(20, 50, 60, 0.5); */
+    border-radius: 6px;
 }
 
-.breed {
-    margin-top: -20px;
+img {
+    width: 80px;
+    height: 80px;
+    margin: 0 20px;
+    object-fit: contain;
 }
 
 .overview-text {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    min-width: 160px;
 }
 
-.icon {
-    fill: #1afa29;
+.overview-text-data {
+    font-size: 1.4em;
+    color: #1dc1f5;
+    margin-top: 8px;
 }
 
-.chart-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.4;
-    z-index: -1;
+.vertical-divider {
+    border-left: 2px solid rgba(70, 167, 118, 0.6) !important;
 }
 
-.mini-chart {
-    width: 100%;
-    height: 100%;
+.rate-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
 }
 
-.data-point-label {
-    font-size: 0.3rem;
-    fill: #ffffff;
-    opacity: 1;
+.year-rate-text {
+    font-family: '黑体';
+    color: #32b885;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+.year-rate {
+    color: #ffffff;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .overview {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 20px;
+    }
+
+    .vertical-divider {
+        display: none !important;
+    }
+
+    .overview-text {
+        margin: 15px 0;
+    }
+
+    .rate-container {
+        width: 100%;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(70, 167, 118, 0.3);
+    }
 }
 </style>

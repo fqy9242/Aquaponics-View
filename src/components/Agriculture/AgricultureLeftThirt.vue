@@ -1,22 +1,42 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { harvestListApi } from '@/apis/agriculture';
 
 // 获取采摘记录数据
 const harvestListData = ref([]);
-const getHarvestListData = async () => {
+
+const config = ref({
+  header: ['产品名称', '重量', '采摘质量', '采摘时间'],
+  headerBGC: 'transparent',
+  data: [],
+  index: true,
+  columnWidth: [50, 110, 100, 120, 200],
+  align: ['center'],
+});
+
+const fetchHarvestListData = async () => {
   const res = await harvestListApi();
-  harvestListData.value = res.data;
+  harvestListData.value = res.data.map(item => [
+    item.name,
+    item.weight,
+    item.harvestQuality,
+    item.harvestDataTime
+  ]);
 };
 
+// 监听 harvestListData 的变化，并更新 config.data
+watch(harvestListData, (newData) => {
+  config.value.data = newData;
+});
+
 onMounted(() => {
-  getHarvestListData();
+  fetchHarvestListData();
 });
 </script>
 
 <template>
   <section class="panel-box alarm-info-panel">
-    <div class="icon-text-container">
+    <div style="display: flex; align-items: center; text-align: center;">
       <svg t="1739963094340" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
         p-id="6400" width="20" height="30">
         <path
@@ -27,48 +47,66 @@ onMounted(() => {
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
-      style="overflow: hidden; height: 300px; position: relative;">
-      <el-table :data="harvestListData" height="310" style="width: 100%" class="custom-alarm-table">
-        <el-table-column prop="name" label="产物名称" width="100" />
-        <el-table-column prop="weight" label="重量" width="80" />
-        <el-table-column prop="harvestQuality" label="采摘质量" width="80" />
-        <el-table-column prop="harvestDataTime" label="采摘时间" width="130" />
-      </el-table>
+      style="overflow: hidden; height: 229px; position: relative;">
+      <dv-scroll-board :config="config" style="width:100%;height:220px" />
     </div>
   </section>
 </template>
 
 <style scoped>
-.icon-text-container {
-  display: flex;
-  align-items: center;
-  /* justify-content: center; */
-  text-align: center;
+/* 核心修改部分 */
+:deep(.dv-scroll-board) {
+  /* 表头橙色 */
+  --dv-scroll-board-header-text-color: #FFA500;
+  /* 数据行绿色 */
+  --dv-scroll-board-text-color: #00FF00;
+
+  /* 原有样式 */
+  --dv-scroll-board-border-color: transparent;
+}
+
+/* 以下为原有样式（保持功能不变） */
+:deep(.dv-scroll-board .header-column) {
+  background-color: transparent !important;
+  font-size: 16px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+:deep(.dv-scroll-board .row-item:hover) {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #333 !important;
+}
+
+:deep(.dv-scroll-board .rows .row-item) {
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+}
+
+:deep(.dv-scroll-board .index) {
+  background-color: rgba(225, 73, 17, 0.3) !important;
+}
+
+:deep(.dv-scroll-board ::-webkit-scrollbar) {
+  width: 6px;
+  height: 6px;
+}
+
+:deep(.dv-scroll-board ::-webkit-scrollbar-thumb) {
+  background-color: rgba(0, 255, 0, 0.3);
+  border-radius: 3px;
+}
+
+:deep(.dv-scroll-board ::-webkit-scrollbar-track) {
+  background-color: transparent;
+}
+
+.icon {
+  margin-right: 8px;
 }
 
 .panel-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-left: 10px;
-}
-
-.alarm-table-container {
-  overflow: hidden;
-  height: 229px;
-  position: relative;
-}
-
-.custom-alarm-table {
-  --el-table-border-color: #e0e0e0; /* 更柔和的边框颜色 */
-  --el-table-border: solid 1px var(--el-table-border-color);
-  --el-table-text-color: #57cb5c; /* 深色文字 */
-  --el-table-header-text-color: #e14911; /* 稍浅的表头文字 */
-  --el-table-row-hover-bg-color: #f5f5f5; /* 浅灰色 hover 背景 */
-  --el-table-current-row-bg-color: #e8f7ff; /* 更明显的选中行背景 */
-  --el-table-header-bg-color: transparent; /* 浅灰色表头背景 */
-  --el-table-bg-color: transparent; /* 白色表格背景 */
-  --el-table-tr-bg-color: transparent;
-  --el-table-expanded-cell-bg-color: transparent;
+  color: #00ff00;
+  margin: 12px 0;
 }
 </style>
