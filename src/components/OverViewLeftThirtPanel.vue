@@ -1,31 +1,34 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { Crop, Histogram, Warning } from '@element-plus/icons-vue' // 引入 Element Plus 图标
+import { ref, onMounted } from 'vue';
 import { getDeviceWarningApi } from '@/apis/overView';
+
 const warningData = ref([]);
-// 获取设备告警信息
-const getDeviceWarning = async () => {
-    const res = await getDeviceWarningApi();
-    warningData.value = res.rows;
-};
-// 轮播表配置
-const config = reactive({
+
+const config = ref({
   header: ['批次', '分区', '预警信息', '结果'],
-  data: warningData,
+  headerBGC: '#e14911',
+  data: warningData.value,
   index: true,
-  columnWidth: [130, 60, 150, 70], // 根据表格列的数量调整宽度
+  columnWidth: [50, 130, 60, 150, 70],
   align: ['center'],
 });
 
-
-
-
+const getDeviceWarning = async () => {
+  const res = await getDeviceWarningApi();
+  warningData.value = res.rows.map(item => [
+    item.cropBatch,
+    item.partitionInfo,
+    item.thresholdValue,
+    item.warningStatus
+  ]);
+  config.value.data = warningData.value;
+};
 
 onMounted(() => {
   getDeviceWarning()
 })
-
 </script>
+
 <template>
   <section class="panel-box alarm-info-panel">
     <div style="display: flex; align-items: center; text-align: center;">
@@ -47,73 +50,73 @@ onMounted(() => {
           d="M465.4 388.5c-16.5 4.1-28.8 20.6-28.8 41.2 0 12.4 0 24.7 4.1 37.1 4.1 45.3 4.1 86.5 8.2 131.8 0 16.5 12.4 24.7 28.8 24.7 16.5 0 28.8-12.4 28.8-28.8v-28.8c0-28.8 4.1-57.7 4.1-86.5 0-20.6 4.1-37.1 4.1-57.7 0-8.2 0-12.4-4.1-20.6-8.1-8.3-28.7-16.5-45.2-12.4z"
           p-id="4215" fill="#d81e06"></path>
       </svg>
-      <h2 class="panel-title">
-        告警信息
-      </h2>
+      <h2 class="panel-title">告警信息</h2>
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
       style="overflow: hidden; height: 229px; position: relative;">
-      <!-- <el-table :data="warningData" height="300" style="width: 100%" class="custom-alarm-table">
-        <el-table-column prop="cropBatch" label="批次" width="130" />
-        <el-table-column prop="partitionInfo" label="分区" width="60" />
-        <el-table-column prop="thresholdValue" label="预警阈值" width="150" />
-        <el-table-column prop="warningStatus" label="结果" width="70" />
-      </el-table> -->
       <dv-scroll-board :config="config" style="width:100%;height:220px" />
     </div>
   </section>
 </template>
+
 <style scoped>
-
-
-/* .panel-title {
-  font-size: 1.5em;
-  color: #333; /* 深色标题 */
-  /* margin-bottom: 15px; */
-/* } */ 
-
-/* .alarm-table-container {
-    overflow-x: auto;
-    margin-top: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    background-color: #fff; /* 白色表格容器背景 */
-/* } */ 
-
-.custom-alarm-table {
-    --el-table-border-color: #e0e0e0; /* 更柔和的边框颜色 */
-    --el-table-border: solid 1px var(--el-table-border-color);
-    --el-table-text-color: #57cb5c; /* 深色文字 */
-    --el-table-header-text-color: #e14911; /* 稍浅的表头文字 */
-    --el-table-row-hover-bg-color: #f5f5f5; /* 浅灰色 hover 背景 */
-    --el-table-current-row-bg-color: #e8f7ff; /* 更明显的选中行背景 */
-    --el-table-header-bg-color: transparent; /* 浅灰色表头背景 */
-    --el-table-bg-color: transparent; /* 白色表格背景 */
-    --el-table-tr-bg-color: transparent;
-    --el-table-expanded-cell-bg-color: transparent;
+/* 表格整体样式 */
+:deep(.dv-scroll-board) {
+  --dv-scroll-board-border-color: transparent;
+  --dv-scroll-board-text-color: #00ff00;
+  --dv-scroll-board-header-text-color: #00ff00;
+  /* 表头文字颜色 */
 }
 
-/* 可以根据需要自定义滚动条样式，例如使用 webkit 滚动条 */
-/* 示例： */
-/*
-.alarm-table-container::-webkit-scrollbar {
-  width: 8px;
+/* 表头样式 */
+:deep(.dv-scroll-board .header-column) {
+  background-color: transparent !important;
+  font-size: 16px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+  /* 添加底部边框保持可视性 */
 }
 
-.alarm-table-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+/* 行悬浮效果 */
+:deep(.dv-scroll-board .row-item:hover) {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #333 !important;
 }
 
-.alarm-table-container::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
+/* 单元格基础样式 */
+:deep(.dv-scroll-board .rows .row-item) {
+  background-color: transparent !important;
+  transition: all 0.3s ease;
 }
 
-.alarm-table-container::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+/* 序号列样式 */
+:deep(.dv-scroll-board .index) {
+  background-color: rgba(225, 73, 17, 0.3) !important;
 }
-*/
+
+/* 滚动条样式 */
+:deep(.dv-scroll-board ::-webkit-scrollbar) {
+  width: 6px;
+  height: 6px;
+}
+
+:deep(.dv-scroll-board ::-webkit-scrollbar-thumb) {
+  background-color: rgba(0, 255, 0, 0.3);
+  border-radius: 3px;
+}
+
+:deep(.dv-scroll-board ::-webkit-scrollbar-track) {
+  background-color: transparent;
+}
+
+/* 图标与标题间距 */
+.icon {
+  margin-right: 8px;
+}
+
+.panel-title {
+  color: #00ff00;
+  margin: 12px 0;
+}
 </style>

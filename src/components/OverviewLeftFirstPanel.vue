@@ -85,16 +85,6 @@ onMounted(() => {
     margin-bottom: 20px;
 }
 
-.panel-box {
-    padding: 20px;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-}
-
-.panel-title {
-    font-size: 24px;
-    margin-left: 10px;
-}
 
 .year-rate-text {
     font-family: '黑体';
