@@ -8,6 +8,18 @@ const getDeviceWarning = async () => {
     const res = await getDeviceWarningApi();
     warningData.value = res.rows;
 };
+// 轮播表配置
+const config = reactive({
+  header: ['批次', '分区', '预警信息', '结果'],
+  data: warningData,
+  index: true,
+  columnWidth: [130, 60, 150, 70], // 根据表格列的数量调整宽度
+  align: ['center'],
+});
+
+
+
+
 
 onMounted(() => {
   getDeviceWarning()
@@ -42,12 +54,13 @@ onMounted(() => {
 
     <div class="alarm-table-container" ref="tableContainer"
       style="overflow: hidden; height: 229px; position: relative;">
-      <el-table :data="warningData" height="300" style="width: 100%" class="custom-alarm-table">
+      <!-- <el-table :data="warningData" height="300" style="width: 100%" class="custom-alarm-table">
         <el-table-column prop="cropBatch" label="批次" width="130" />
         <el-table-column prop="partitionInfo" label="分区" width="60" />
         <el-table-column prop="thresholdValue" label="预警阈值" width="150" />
         <el-table-column prop="warningStatus" label="结果" width="70" />
-      </el-table>
+      </el-table> -->
+      <dv-scroll-board :config="config" style="width:100%;height:220px" />
     </div>
   </section>
 </template>
