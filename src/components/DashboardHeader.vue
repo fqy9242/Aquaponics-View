@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 
 const componentStore = useComponentStore();
 const router = useRouter();
-const tabs = ref(['整体情况', '种植模块', '养殖模块']);
+const tabs = ref(['整体情况', '养殖模块', '种植模块']);
 
 // 监听 componentStore.currentTab 的变化
 watch(() => componentStore.currentTab, (newTab) => {
@@ -26,10 +26,10 @@ const switchTab = (index) => {
       router.push('/');
       break;
     case 1:
-      router.push('/agriculture');
+      router.push('/fish');
       break;
     case 2:
-      router.push('/fish');
+      router.push('/agriculture');
       break;
   }
 };

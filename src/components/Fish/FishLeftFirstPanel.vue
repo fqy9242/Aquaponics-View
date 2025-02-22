@@ -9,7 +9,6 @@ const getPlantingTaskOverviewData = async () => {
     const res = await getPlantingTaskOverviewApi("-1");
     plantingTaskOverviewData.value = res.data;
 };
-
 const createChart = (id, title, value) => {
     const chartDom = document.getElementById(id);
     const myChart = echarts.init(chartDom);
@@ -64,7 +63,6 @@ onMounted(() => {
     });
 });
 </script>
-
 <template>
     <div class="panel-box water-quality-panel">
         <div class="header-container">
@@ -84,7 +82,7 @@ onMounted(() => {
                 <path d="M692.6336 595.5584m-36.864 0a36.864 36.864 0 1 0 73.728 0 36.864 36.864 0 1 0-73.728 0Z"
                     fill="#1afa29" p-id="13093"></path>
             </svg>
-            <div class="panel-title">种植任务概览</div>
+            <div class="panel-title">养殖任务概览</div>
         </div>
         <div class="charts-container">
             <div id="non-distribute-chart" class="chart"></div>
@@ -94,7 +92,6 @@ onMounted(() => {
         </div>
     </div>
 </template>
-
 <style scoped>
 .header-container {
     display: flex;

@@ -4,14 +4,13 @@
     <!-- <CameraFeedPanel title="摄像头" placeholder="[摄像头视频流/图像占位符]" :show-controls="true" /> -->
     <!-- <img src="@/assets/imgs/agr1.png" alt=""> -->
     <!-- <BottomGraph /> -->
-    <LandGeo />
-    <FishCoopGeo />
+    <ConterPanel />
+    <!-- <FishCoopGeo /> -->
   </main>
 </template>
   
   <script setup>
   // import CameraFeedPanel from './CameraFeedPanel.vue';
   // import BottomGraph from '@/components/BottomGraph.vue'
-  import BachGeo from '@/components/LandGeo.vue';
-  import FishCoopGeo from '@/components/FishCoopGeo.vue';
+  import ConterPanel from '@/components/OverviewCenterPannel.vue';
   </script>
