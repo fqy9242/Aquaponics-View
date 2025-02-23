@@ -18,56 +18,97 @@ watch(graphData, (newData) => {
   if (newData.name.length > 0 && newData.value.length > 0) {
     const chartDom = document.getElementById('harvest-chart');
     const myChart = echarts.init(chartDom);
+
+    // 专业级配色方案（适合暗色背景）
+    const professionalColors = [
+      { start: '#9BE15D', end: '#00E3AE' },
+      { start: '#FFD666', end: '#FF8F66' },
+      { start: '#36D1DC', end: '#5B86E5' },
+      { start: '#A8FF78', end: '#78FFD6' },
+      { start: '#FAD961', end: '#F76B1C' },
+      { start: '#FF9966', end: '#FF5E62' },
+      { start: '#6DD5FA', end: '#2980B9' },
+      { start: '#ACB6E5', end: '#86FDE8' },
+      { start: '#B3FFAB', end: '#12FFF7' },
+      { start: '#FDB99B', end: '#CF8BF3' }
+    ];
+
     const option = {
-      // title: {
-      //   text: '农产品采摘优秀率TOP10'
-      // },
-      grip: {
-        left: '30%',
-        right: '1%',
-        bottom: '0%',
+      grid: {
+        left: '12%',
+        right: '10%',
+        bottom: '10%',
+        top: '15%',
         containLabel: true
       },
       tooltip: {
         trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
+        axisPointer: { type: 'shadow' },
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        borderColor: 'rgba(255,255,255,0.2)',
+        textStyle: {
+          color: '#fff',
+          fontSize: 14
         }
       },
       xAxis: {
         show: false,
-        type: 'value',
-        max: 100, // 设置横轴最大值为100
-        boundaryGap: [0, 0.01],
-        axisLabel: {
-          color: '#FFFFFF', // 设置横轴字体颜色为白色
-          fontWeight: 'bold' // 设置横轴字体加粗
-        }
+        max: 100,
+        axisLabel: { color: '#fff' }
       },
       yAxis: {
         type: 'category',
+        inverse: true,
         data: newData.name,
+        axisLine: { show: false },
+        axisTick: { show: false },
         axisLabel: {
-          color: '#FFFFFF', // 设置纵轴字体颜色为白色
-          fontWeight: 'bold' // 设置纵轴字体加粗
+          color: '#fff',
+          fontSize: 14,
+          fontWeight: 'bold',
+          margin: 20
         }
       },
-      series: [
-        {
-          name: '优秀率',
-          type: 'bar',
-          data: newData.value,
-          itemStyle: {
-            color: (params) => {
-              const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF', '#FF1493', '#00CED1', '#FFD700'];
-              return colors[params.dataIndex % colors.length];
-            },
-            barBorderRadius: [5, 5, 5, 9] // 设置柱形的圆角
+      series: [{
+        type: 'bar',
+        data: newData.value,
+        showBackground: true,
+        backgroundStyle: {
+          color: 'rgba(255,255,255,0.05)',
+          borderRadius: [0, 6, 6, 0]
+        },
+        itemStyle: {
+          borderRadius: [0, 6, 6, 0],
+          color: (params) => {
+            return new echarts.graphic.LinearGradient(1, 0, 0, 0, [
+              { offset: 0, color: professionalColors[params.dataIndex % 10].start },
+              { offset: 1, color: professionalColors[params.dataIndex % 10].end }
+            ]);
           }
-        }
-      ]
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 20,
+            shadowColor: 'rgba(255,255,255,0.3)'
+          }
+        },
+        label: {
+          show: true,
+          position: 'right',
+          color: '#fff',
+          fontSize: 14,
+          fontWeight: 'bold',
+          formatter: '{c}%'
+        },
+        animationDuration: 1500,
+        animationEasing: 'cubicOut'
+      }]
     };
+
     myChart.setOption(option);
+
+    // 窗口resize自适应
+    window.addEventListener('resize', () => myChart.resize());
   }
 });
 </script>
@@ -86,22 +127,38 @@ watch(graphData, (newData) => {
       </svg>
       <h2 class="panel-title">农产品采摘优秀率TOP10</h2>
     </div>
-    <div id="harvest-chart" style="width: 100%; height: 330px;"></div>
+    <div class="chart-container">
+      <div id="harvest-chart" style="width: 100%; height: 330px;"></div>
+    </div>
   </section>
 </template>
 
 <style scoped>
+.chart-container {
+  /* padding: 15px; */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(46, 213, 115, 0.2);
+  transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(46, 213, 115, 0.15);
+}
+
+
 .header-container {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  /* 左对齐 */
   margin-bottom: 20px;
 }
 
 .panel-box {
   padding: 20px;
-  border: 1px solid #ccc;
   margin-top: 20px;
 }
 

@@ -207,8 +207,6 @@ watch(deviceInfo, (newVal) => {
       <div id="online_device" class="device_info_charts"></div>
       <div id="online_device_rate" class="device_info_charts"></div>
     </div>
-
-
     <!-- <div ref=" chartRef" style="width: 100%; height: 210px;"></div> -->
   </section>
 </template>

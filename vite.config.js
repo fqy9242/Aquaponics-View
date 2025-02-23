@@ -25,9 +25,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // hmr: false,
       "/api": {
-        target: "http://localhost:8081",
-        // target: "http://10.0.10.2:8081",
+        target: "http://localhost:8081", 
+        // target: "http://10.0.19.2:8081",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

@@ -1,5 +1,5 @@
 <template>
-  <section class="panel-box production-analysis-panel">
+  <section class="panel-box aqua-panel">
     <div class="panel-header">
       <svg t="1740044562165" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
         p-id="18682" width="30" height="30">
@@ -9,7 +9,7 @@
       </svg>
       <h2 class="panel-title">鱼菜共生资源循环</h2>
     </div>
-    <div id="echarts" style="width: 100%; height: 280px; margin-top: -20px;"></div>
+    <div id="sankeyChart" style="width: 100%; height: 320px;"></div>
   </section>
 </template>
 
@@ -18,54 +18,96 @@ import { onMounted } from 'vue'
 import * as echarts from 'echarts'
 
 onMounted(() => {
-  const chartDom = document.getElementById('echarts');
-  const myChart = echarts.init(chartDom);
+  const chartDom = document.getElementById('sankeyChart')
+  const chart = echarts.init(chartDom)
+
   const option = {
     tooltip: {
-      trigger: 'item'
-    },
-    series: [
-      {
-        name: '资源循环',
-        type: 'pie',
-        radius: ['30%', '60%'], // 调整环形图的大小
-        avoidLabelOverlap: false,
-        label: {
-          show: true,
-          position: 'outside',
-          // formatter: '{b}: {c} ({d}%)', // 显示标签的名称、数值和百分比
-          fontSize: 10 // 调整标签的字体大小
-        },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: '12',
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: {
-          show: true
-        },
-        data: [
-          { value: 5000, name: '节约水资源 (升)' },
-          { value: 200, name: '减少化肥使用 (公斤)' },
-          { value: 150, name: '减少农药使用 (公斤)' },
-          { value: 3000, name: '提高产量 (公斤)' }
-        ]
+      trigger: 'item',
+      formatter: (params) => {
+        console.log(params); // 调试信息
+        if (params.dataType === 'node') {
+          return `${params.data.name}<br/>${params.data.value ? params.data.value + 'L' : '无数据'}`
+        } else if (params.dataType === 'edge') {
+          return `${params.data.source} → ${params.data.target}<br/>流量: ${params.data.value ? params.data.value + 'L' : '无数据'}`
+        }
+        return '未知数据'
       }
-    ]
-  };
-  myChart.setOption(option);
-});
+    },
+    series: [{
+      type: 'sankey',
+      layout: 'none',
+      emphasis: { focus: 'adjacency' },
+      data: [
+        { name: '鱼塘水体', value: 10000, itemStyle: { color: '#3BA0FF' } },
+        { name: '水处理系统', itemStyle: { color: '#7ACAFE' } },
+        { name: '植物吸收', itemStyle: { color: '#A0D87A' } },
+        { name: '鱼类代谢', itemStyle: { color: '#FFC859' } },
+        { name: '微生物分解', itemStyle: { color: '#FF9F7F' } },
+        { name: '循环回用', itemStyle: { color: '#36CBCB' } }
+      ],
+      links: [
+        { source: '鱼塘水体', target: '水处理系统', value: 9800 },
+        { source: '水处理系统', target: '植物吸收', value: 7500 },
+        { source: '水处理系统', target: '循环回用', value: 2300 },
+        { source: '植物吸收', target: '微生物分解', value: 6800 },
+        { source: '鱼类代谢', target: '微生物分解', value: 4500 },
+        { source: '微生物分解', target: '循环回用', value: 11200 }
+      ],
+      lineStyle: {
+        color: 'gradient',
+        curveness: 0.3,
+        opacity: 0.8
+      },
+      label: {
+        color: 'rgba(255,255,255,0.9)',
+        fontSize: 12
+      },
+      levels: [{
+        depth: 0,
+        itemStyle: { color: '#3BA0FF' },
+        lineStyle: { color: 'rgba(59,160,255,0.3)' }
+      }, {
+        depth: 1,
+        itemStyle: { color: '#7ACAFE' }
+      }]
+    }],
+    backgroundColor: 'rgba(8,24,36,0.9)'
+  }
+
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+})
 </script>
 
 <style scoped>
+.aqua-panel {
+  background: linear-gradient(160deg, rgba(8, 48, 64, 0.9), rgba(4, 24, 32, 0.9));
+  border: 1px solid rgba(54, 203, 203, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  transition: transform 0.3s ease;
+}
+
+.aqua-panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(54, 203, 203, 0.15);
+}
+
 .panel-header {
   display: flex;
   align-items: center;
 }
 
-.panel-header .icon {
-  margin-right: 10px;
+.panel-title {
+  background: linear-gradient(90deg, #36CBCB, #A0D87A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.3rem;
+  margin-left: 12px;
+}
+
+.icon {
+  filter: drop-shadow(0 0 6px rgba(54, 203, 203, 0.4));
 }
 </style>

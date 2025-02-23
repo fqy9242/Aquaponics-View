@@ -6,93 +6,156 @@ import * as echarts from 'echarts'
 const yieldInfo = ref([])
 
 onMounted(async () => {
-  const res = await getAllYieldInfoApi()
-  yieldInfo.value = res.data
-  nextTick(() => {
-    initChart()
-  })
+  try {
+    const res = await getAllYieldInfoApi()
+    yieldInfo.value = res.data
+    nextTick(() => initChart())
+  } catch (error) {
+    console.error('获取产量数据失败:', error)
+  }
 })
 
 const initChart = () => {
   const chartDom = document.getElementById('yieldChart')
   const myChart = echarts.init(chartDom)
+
+  // 专业渐变配色
+  const colorSet = {
+    target: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#FF7E5F' },
+      { offset: 1, color: '#FF4D4D' }
+    ]),
+    actual: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#00F2C3' },
+      { offset: 1, color: '#00B4A3' }
+    ])
+  }
+
+  // 处理数据
+  const xAxisData = yieldInfo.value.map(item => item.month || '未知月份')
+  const targetData = yieldInfo.value.map(item => item.targetYield)
+  const actualData = yieldInfo.value.map(item => item.yield)
+
   const option = {
-    // title: {
-    //   text: '产量分析',
-    //   left: 'center',
-    //   textStyle: {
-    //     color: '#fff',
-    //     fontSize: 18
-    //   }
-    // },
     tooltip: {
       trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      borderColor: 'rgba(255,255,255,0.2)',
+      textStyle: {
+        color: '#fff',
+        fontSize: 14
+      },
+      formatter: (params) => {
+        const month = params[0].axisValue
+        let tooltip = `<div style="margin-bottom:5px;color:#1afa29;font-weight:bold">${month}月</div>`
+
+        params.forEach(item => {
+          tooltip += `
+            <div style="display:flex;align-items:center;margin:8px 0">
+              <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${item.color};margin-right:8px"></span>
+              ${item.seriesName}: 
+              <strong style="margin-left:8px;color:${item.color}">${item.value ?? '无数据'}</strong>
+            </div>
+          `
+        })
+        return tooltip
       }
     },
     legend: {
-      data: ['目标产量', '实际产量'],
-      bottom: 0,
+      bottom: 10,
+      icon: 'roundRect',
+      itemWidth: 14,
+      itemHeight: 4,
       textStyle: {
-        color: '#fff'
+        color: '#fff',
+        fontSize: 12
       }
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '10%',
+      left: '2%',
+      right: '2%',
+      bottom: '15%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
-      data: yieldInfo.value.map(item => item.month),
       axisLine: {
         lineStyle: {
-          color: '#fff'
+          color: 'rgba(255,255,255,0.3)'
         }
       },
       axisLabel: {
-        color: '#fff'
-      }
+        color: '#fff',
+        fontSize: 12
+      },
+      data: xAxisData
     },
     yAxis: {
       type: 'value',
-      axisLine: {
+      splitLine: {
         lineStyle: {
-          color: '#fff'
+          color: 'rgba(255,255,255,0.1)'
         }
       },
       axisLabel: {
-        color: '#fff'
+        color: '#fff',
+        fontSize: 12
       }
     },
     series: [
       {
         name: '目标产量',
         type: 'line',
-        data: yieldInfo.value.map(item => item.targetYield),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
         itemStyle: {
-          color: '#FF5733'
+          color: colorSet.target
         },
         lineStyle: {
-          width: 3
-        }
+          width: 3,
+          shadowBlur: 12,
+          shadowColor: '#FF7E5F'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(255,126,95,0.3)' },
+            { offset: 1, color: 'rgba(255,77,77,0)' }
+          ])
+        },
+        data: targetData,
+        animationDelay: 200
       },
       {
         name: '实际产量',
         type: 'line',
-        data: yieldInfo.value.map(item => item.yield),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
         itemStyle: {
-          color: '#33FF57'
+          color: colorSet.actual
         },
         lineStyle: {
-          width: 3
-        }
+          width: 3,
+          shadowBlur: 12,
+          shadowColor: '#00F2C3'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(0,242,195,0.3)' },
+            { offset: 1, color: 'rgba(0,180,163,0)' }
+          ])
+        },
+        data: actualData,
+        animationDelay: 400
       }
-    ]
+    ],
+    animationEasing: 'cubicOut',
+    animationDuration: 1000
   }
+
   myChart.setOption(option)
+  window.addEventListener('resize', () => myChart.resize())
 }
 </script>
 
@@ -110,25 +173,64 @@ const initChart = () => {
       </svg>
       <h2 class="panel-title">产量分析</h2>
     </div>
-    <div id="yieldChart" style="width: 100%; height: 300px;"></div>
+    <div class="chart-container">
+      <div id="yieldChart" style="width: 100%; height: 300px;"></div>
+      <div class="chart-glow"></div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.panel-box {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.production-analysis-panel {
+  border: 1px solid rgba(26, 250, 41, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.production-analysis-panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(26, 250, 41, 0.15);
+}
+
+.chart-container {
+  position: relative;
+  padding: 15px;
+}
+
+.chart-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(rgba(26, 250, 41, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .panel-header {
   display: flex;
   align-items: center;
+  /* padding: 16px 20px 10px; */
 }
 
 .panel-title {
-  font-size: 24px;
-  margin-left: 10px;
-  color: #fff;
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #1afa29 0%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+  margin-left: 12px;
+}
+
+.icon {
+  filter: drop-shadow(0 0 5px rgba(26, 250, 41, 0.3));
+  transition: filter 0.3s ease;
+}
+
+.icon:hover {
+  filter: drop-shadow(0 0 8px rgba(26, 250, 41, 0.5));
 }
 </style>
