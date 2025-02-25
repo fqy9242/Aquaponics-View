@@ -213,7 +213,7 @@ onMounted(() => {
   filter: blur(0.5px);
 }
 
-/* 响应式布局 */
+
 @media (max-width: 1200px) {
   .charts-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -221,7 +221,7 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
@@ -233,7 +233,7 @@ onMounted(() => {
   .chart {
     height: 160px;
   }
-}
+} */
 
 /* 加载动画 */
 @keyframes chart-loading {

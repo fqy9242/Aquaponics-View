@@ -5,13 +5,23 @@ import { getDeviceWarningApi } from '@/apis/overView';
 const warningData = ref([]);
 
 const config = ref({
-  header: ['批次', '分区', '预警信息', '结果'],
+  header: ['批次', '分区', '预警信息', '结果', '预警时间'],
   headerBGC: 'transparent',
   data: warningData.value,
   index: true,
-  columnWidth: [50, 130, 60, 150, 70],
+  columnWidth: [50, 110, 60, 250, 70, 120],
   align: ['center'],
 });
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${month}-${day} ${hours}: ${minutes}`;
+};
 
 const getDeviceWarning = async () => {
   const res = await getDeviceWarningApi();
@@ -19,7 +29,8 @@ const getDeviceWarning = async () => {
     item.cropBatch,
     item.partitionInfo,
     item.thresholdValue,
-    item.warningStatus
+    item.warningStatus,
+    formatDate(item.startTime)
   ]);
   config.value.data = warningData.value;
 };
@@ -55,8 +66,8 @@ onMounted(() => {
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
-      style="overflow: hidden; height: 229px; position: relative;">
-      <dv-scroll-board :config="config" style="width:100%;height:220px" />
+      style="overflow: hidden; height: 365px; position: relative;">
+      <dv-scroll-board :config="config" style="width:100%;height:360px" />
     </div>
   </section>
 </template>

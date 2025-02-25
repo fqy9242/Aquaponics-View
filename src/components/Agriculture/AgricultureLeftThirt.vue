@@ -6,11 +6,11 @@ import { harvestListApi } from '@/apis/agriculture';
 const harvestListData = ref([]);
 
 const config = ref({
-  header: ['产品名称', '重量', '采摘质量', '采摘时间'],
+  header: ['产品名称', '重量', '采摘质量', '描述', '采摘时间'],
   headerBGC: 'transparent',
   data: [],
   index: true,
-  columnWidth: [50, 110, 100, 120, 200],
+  columnWidth: [50, 110, 100, 120, 150, 200],
   align: ['center'],
 });
 
@@ -20,6 +20,7 @@ const fetchHarvestListData = async () => {
     item.name,
     item.weight,
     item.harvestQuality,
+    item.description,
     item.harvestDataTime
   ]);
 };

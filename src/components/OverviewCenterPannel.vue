@@ -327,7 +327,7 @@ onUnmounted(() => {
 <style scoped>
 .chart-container {
     width: 100%;
-    height: 960px;
+    height: 1060px;
 }
 .panel-title .icon {
     margin-right: 10px;
