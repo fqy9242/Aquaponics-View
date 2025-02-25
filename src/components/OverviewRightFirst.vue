@@ -13,7 +13,7 @@
           p-id="15439" fill="#1afa29"></path>
       </svg>
       <h2 class="panel-title">气象站</h2>
-      <dv-decoration6 style="width:30px;height:30px;" />
+      <dv-decoration6 style="width:30px; float: right;" />
     </div>
     <br>
     <div class="data-grid">
