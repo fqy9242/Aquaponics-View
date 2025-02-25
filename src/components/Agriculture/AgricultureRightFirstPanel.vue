@@ -12,8 +12,10 @@ const soilTemperature = ref(0);
 const lightIntensity = ref(0);
 // ph值
 const soilPh = ref(0);
-// TODO 三个页面都要用到同一个websocket，可以考虑抽取到一个公共的地方
+// 采集时间
+const collectionTime = ref('');
 
+// TODO 三个页面都要用到同一个websocket，可以考虑抽取到一个公共的地方
 
 let ws;
 const connectWebSocket = () => {
@@ -38,7 +40,8 @@ const connectWebSocket = () => {
     if (data.data['05']) {
       soilPh.value = data.data['05'].soil_ph || soilPh.value;
     }
-
+    // 更新采集时间
+    collectionTime.value = new Date().toLocaleString();
   };
 
   ws.onclose = () => {
@@ -78,6 +81,7 @@ onUnmounted(() => {
       <h2 class="panel-title">土壤检测</h2>
     </div>
     <br />
+    <div class="collection-time">采集时间: {{ collectionTime }}</div>
     <div class="data-grid">
       <div class="data-item">
         <span class="data-label">含水率</span>
@@ -97,22 +101,9 @@ onUnmounted(() => {
       <div class="data-item">
         <span class="data-label">PH</span>
         <span class="data-value">{{ soilPh }}</span>
-        <span class="data-unit">PH
-        </span>
+        <span class="data-unit">PH</span>
       </div>
     </div>
-    <!-- <div class="line-chart small-chart">
-      <div class="chart-title">1#空气温度</div>
-      <div class="line-graph">
-        <div class="line"></div>
-        <div class="point" style="left: 10%; bottom: 30%;"></div>
-        <div class="point" style="left: 25%; bottom: 50%;"></div>
-        <div class="point" style="left: 40%; bottom: 70%;"></div>
-        <div class="point" style="left: 55%; bottom: 60%;"></div>
-        <div class="point" style="left: 70%; bottom: 85%;"></div>
-        <div class="point" style="left: 85%; bottom: 75%;"></div>
-      </div>
-    </div> -->
   </section>
 </template>
 
@@ -122,10 +113,43 @@ onUnmounted(() => {
   align-items: center;
 }
 
+.collection-time {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.data-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
 .data-label {
-  /* font-size: 14px; */
+  font-size: 14px;
   background: linear-gradient(to right, #FFA500, #FFFFFF);
   -webkit-background-clip: text;
   color: transparent;
+}
+
+.data-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #00FF00;
+}
+
+.data-unit {
+  background: linear-gradient(to right, #FFA500, #FFFFFF);
+    -webkit-background-clip: text;
+    color: transparent;
 }
 </style>

@@ -91,7 +91,7 @@ onUnmounted(() => {
 <style scoped>
 .wordcloud {
     width: 100%;
-    height: 150px;
+    height: 305px;
 }
 
 .panel-header {
