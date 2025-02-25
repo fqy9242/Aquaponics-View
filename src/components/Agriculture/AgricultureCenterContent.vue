@@ -5,6 +5,8 @@
     <!-- <img src="@/assets/imgs/agr1.png" alt=""> -->
     <!-- <BottomGraph /> -->
     <centerFirstPanel />
+    <centerSecondPanel /> 
+
   </main>
 </template>
   
@@ -13,4 +15,5 @@
   // import BottomGraph from '@/components/BottomGraph.vue'
   import BachGeo from '@/components/OverviewCenterPannel.vue';
   import centerFirstPanel from '@/components/Agriculture/AgricultureCenterFirstPanel.vue';
+  import centerSecondPanel from '@/components/Agriculture/AgricultureCenterSecondPanel.vue'
   </script>
