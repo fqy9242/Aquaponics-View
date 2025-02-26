@@ -14,7 +14,7 @@ const lightIntensity = ref(0);
 const soilPh = ref(0);
 // 采集时间
 const collectionTime = ref('');
-
+  
 // TODO 三个页面都要用到同一个websocket，可以考虑抽取到一个公共的地方
 
 let ws;
