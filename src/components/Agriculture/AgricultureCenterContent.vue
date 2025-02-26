@@ -4,8 +4,9 @@
     <!-- <CameraFeedPanel title="摄像头" placeholder="[摄像头视频流/图像占位符]" :show-controls="true" /> -->
     <!-- <img src="@/assets/imgs/agr1.png" alt=""> -->
     <!-- <BottomGraph /> -->
-    <LandGeo />
-    <AgricultureCenterSecondPanel />
+    <centerFirstPanel />
+    <centerSecondPanel /> 
+
   </main>
 </template>
   
@@ -13,5 +14,6 @@
   // import CameraFeedPanel from './CameraFeedPanel.vue';
   // import BottomGraph from '@/components/BottomGraph.vue'
   import BachGeo from '@/components/OverviewCenterPannel.vue';
-  import AgricultureCenterSecondPanel from '@/components/Agriculture/AgricultureCenterSecondPanel.vue';
+  import centerFirstPanel from '@/components/Agriculture/AgricultureCenterFirstPanel.vue';
+  import centerSecondPanel from '@/components/Agriculture/AgricultureCenterSecondPanel.vue'
   </script>

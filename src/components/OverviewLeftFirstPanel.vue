@@ -51,7 +51,7 @@ onMounted(() => {
                 <div class="overview">
                     <img src="@/assets/imgs/ecological_agriculture.png" draggable="false">
                     <div class="overview-text">
-                        <h1>总种植面积</h1>
+                        <h1 class="info-title">总种植面积</h1>
                         <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalCultivation + ' 亩' }}
                         </h1>
                     </div>
@@ -68,7 +68,7 @@ onMounted(() => {
                 <div class="overview">
                     <img src="@/assets/imgs/breed.png" draggable="false">
                     <div class="overview-text">
-                        <h1>总养殖面积</h1>
+                        <h1 class="info-title">总养殖面积</h1>
                         <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }}</h1>
                     </div>
                     <el-divider class="vertical-divider" direction="vertical" style="height: 80px; margin: 0 10px;" />
@@ -90,7 +90,11 @@ onMounted(() => {
     align-items: center;
     /* margin-bottom: 20px; */
 }
-
+.info-title {
+    background: linear-gradient(to right, white, #1afa29);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+}
 .panel-title {
     color: #1afa29;
     font-size: 20px;
@@ -156,7 +160,7 @@ img {
 }
 
 /* 响应式布局 */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .overview {
         height: auto;
         flex-wrap: wrap;
@@ -177,5 +181,5 @@ img {
         padding-top: 15px;
         border-top: 1px solid rgba(70, 167, 118, 0.3);
     }
-}
+} */
 </style>

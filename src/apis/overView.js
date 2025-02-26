@@ -40,3 +40,10 @@ export const getWordCloudApi = () => {
     url: "/analysis/overview/wordCloud",
   });
 }
+
+// 获取鱼菜共生基地分布信息
+export const getBaseInfoApi = () => {
+  return request({
+    url: "/analysis/overview/baseInfo",
+  });
+}

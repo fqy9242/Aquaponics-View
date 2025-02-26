@@ -174,7 +174,7 @@ const initChart = () => {
       <h2 class="panel-title">产量分析</h2>
     </div>
     <div class="chart-container">
-      <div id="yieldChart" style="width: 100%; height: 300px;"></div>
+      <div id="yieldChart" style="width: 100%; height: 320px;"></div>
       <div class="chart-glow"></div>
     </div>
   </section>

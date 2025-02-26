@@ -28,3 +28,15 @@ export const getAllYieldInfoApi = () => {
     method: "get",
   });
 }
+// 过去七天施肥情况
+export const fertilizationLimit7Api = () => {
+  return request({
+    url: "/analysis/agriculture/fertilizationLimit7"
+  })
+}
+// 过去七天施肥情况图表山上
+export const fertilizationLimit7GraphApi = () => {
+  return request({
+    url: "/analysis/agriculture/fertilizationLimit7/graph"
+  })
+}
