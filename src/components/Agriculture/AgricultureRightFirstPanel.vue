@@ -79,6 +79,7 @@ onUnmounted(() => {
           p-id="15439" fill="#1afa29"></path>
       </svg>
       <h2 class="panel-title">土壤检测</h2>
+      <dv-decoration6 :color="['#1afa29', '#269572']" style="width:30px; float: right;" />
     </div>
     <br />
     <div class="collection-time">采集时间: {{ collectionTime }}</div>
@@ -110,7 +111,10 @@ onUnmounted(() => {
 <style scoped>
 .header-container {
   display: flex;
-  align-items: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
 
 .collection-time {

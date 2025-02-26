@@ -1,68 +1,3 @@
-<template>
-  <section class="panel-box weather-station-panel">
-    <div class="header-container">
-      <svg t="1739967592286" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-        p-id="15436" width="30" height="30">
-        <path
-          d="M484.917308 1023.771454c-74.50597 0-144.441022-29.025332-197.120857-81.705167-52.679835-52.679835-81.705167-122.72916-81.705167-197.120857 0-61.821672 19.769222-120.329428 57.250754-169.238254 32.682067-42.738087 77.705613-75.534427 128.099989-93.475282V94.503738c0-52.10847 42.395268-94.503738 94.503738-94.503738C538.168508 0 580.563776 42.395268 580.563776 94.503738V179.522821h-45.709184V94.503738c0-26.968419-21.940408-48.794554-48.794554-48.794554-26.968419 0-48.794554 21.940408-48.794554 48.794554v421.552952l-16.56958 4.685191c-47.651825 13.598482-90.618458 42.966633-121.015065 82.619351-31.310791 40.90972-47.88037 89.818547-47.88037 141.469925 0 128.557081 104.559759 233.11684 233.116839 233.11684s233.11684-104.559759 233.11684-233.11684c0-51.308559-16.341033-99.874568-47.194733-140.670014-29.939516-39.424171-72.334784-68.906595-119.529517-82.847897L534.854592 516.628055V222.032362h45.709184v260.999442c49.823011 18.283674 94.389465 51.080013 126.614441 93.703828 36.910166 48.794554 56.450843 106.959491 56.450842 168.324071 0 74.50597-29.025332 144.441022-81.705167 197.120857-52.565562 52.679835-122.500614 81.590894-197.006584 81.590894z"
-          p-id="15437" fill="#1afa29"></path>
-        <path d="M461.47421 637.236308l1.137016-310.593906 45.709185 0.166838-1.137016 310.593907z" p-id="15438"
-          fill="#1afa29"></path>
-        <path
-          d="M484.917308 884.358442c-71.877692 0-130.271175-58.393483-130.271175-130.271175s58.393483-130.271175 130.271175-130.271175 130.271175 58.393483 130.271175 130.271175-58.393483 130.271175-130.271175 130.271175z m0-214.833166c-46.623368 0-84.561991 37.938623-84.561991 84.561991s37.938623 84.561991 84.561991 84.561991 84.561991-37.938623 84.561991-84.561991-37.938623-84.561991-84.561991-84.561991zM795.511215 95.875014H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM704.092847 218.147082h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM795.511215 340.41915H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854593h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854593s-10.284566 22.854592-22.854592 22.854592zM704.092847 462.691217h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592z"
-          p-id="15439" fill="#1afa29"></path>
-      </svg>
-      <h2 class="panel-title">气象站</h2>
-      <dv-decoration6 :color="['#1afa29', '#269572']" style="width:30px; float: right;" />
-    </div>
-    <br>
-    <div class="data-grid">
-      <div class="data-item">
-        <span class="data-label">空气湿度</span>
-        <span class="data-value">{{ humidity }}</span>
-        <span class="data-unit">%</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">空气温度</span>
-        <span class="data-value">{{ temperature }}</span>
-        <span class="data-unit">°C</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">光照强度</span>
-        <span class="data-value">{{ lightIntensity }}</span>
-        <span class="data-unit">Lux</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">湿度</span>
-        <span class="data-value">{{ soilMoisture }}</span>
-        <span class="data-unit">%</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">噪声</span>
-        <span class="data-value">{{ noise }}</span>
-        <span class="data-unit">dB</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">风速</span>
-        <span class="data-value">{{ windSpeed }}</span>
-        <span class="data-unit">m/s</span>
-      </div>
-    </div>
-    <!-- <div class="line-chart small-chart">
-      <div class="chart-title">1#空气温度</div>
-      <div class="line-graph">
-        <div class="line"></div>
-        <div class="point" style="left: 10%; bottom: 30%;"></div>
-        <div class="point" style="left: 25%; bottom: 50%;"></div>
-        <div class="point" style="left: 40%; bottom: 70%;"></div>
-        <div class="point" style="left: 55%; bottom: 60%;"></div>
-        <div class="point" style="left: 70%; bottom: 85%;"></div>
-        <div class="point" style="left: 85%; bottom: 75%;"></div>
-      </div>
-    </div> -->
-  </section>
-</template>
-
 <script setup>
 /**
  * by qht at 2025-2-19
@@ -74,7 +9,17 @@ const lightIntensity = ref(0);
 const soilMoisture = ref(0);
 const noise = ref(0);
 const windSpeed = ref(0);
+const collectionTime = ref('');
 let ws;
+
+const dataItems = ref([
+  { label: '空气湿度', value: humidity, unit: '%' },
+  { label: '空气温度', value: temperature, unit: '°C' },
+  { label: '光照强度', value: lightIntensity, unit: 'Lux' },
+  { label: '噪声', value: noise, unit: 'dB' },
+  { label: '风速', value: windSpeed, unit: 'm/s' },
+]);
+
 const connectWebSocket = () => {
   ws = new WebSocket('ws://localhost:9000');
 
@@ -98,7 +43,8 @@ const connectWebSocket = () => {
     if (data.data['03']) {
       windSpeed.value = data.data['03'].speed || windSpeed.value;
     }
-
+    // Update collection time
+    collectionTime.value = new Date().toLocaleString();
   };
 
   ws.onclose = () => {
@@ -120,17 +66,92 @@ onUnmounted(() => {
   }
 });
 </script>
+<template>
+  <section class="panel-box weather-station-panel">
+    <div class="header-container">
+      <svg t="1739967592286" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+        p-id="15436" width="30" height="30">
+        <path
+          d="M484.917308 1023.771454c-74.50597 0-144.441022-29.025332-197.120857-81.705167-52.679835-52.679835-81.705167-122.72916-81.705167-197.120857 0-61.821672 19.769222-120.329428 57.250754-169.238254 32.682067-42.738087 77.705613-75.534427 128.099989-93.475282V94.503738c0-52.10847 42.395268-94.503738 94.503738-94.503738C538.168508 0 580.563776 42.395268 580.563776 94.503738V179.522821h-45.709184V94.503738c0-26.968419-21.940408-48.794554-48.794554-48.794554-26.968419 0-48.794554 21.940408-48.794554 48.794554v421.552952l-16.56958 4.685191c-47.651825 13.598482-90.618458 42.966633-121.015065 82.619351-31.310791 40.90972-47.88037 89.818547-47.88037 141.469925 0 128.557081 104.559759 233.11684 233.116839 233.11684s233.11684-104.559759 233.11684-233.11684c0-51.308559-16.341033-99.874568-47.194733-140.670014-29.939516-39.424171-72.334784-68.906595-119.529517-82.847897L534.854592 516.628055V222.032362h45.709184v260.999442c49.823011 18.283674 94.389465 51.080013 126.614441 93.703828 36.910166 48.794554 56.450843 106.959491 56.450842 168.324071 0 74.50597-29.025332 144.441022-81.705167 197.120857-52.565562 52.679835-122.500614 81.590894-197.006584 81.590894z"
+          p-id="15437" fill="#1afa29"></path>
+        <path d="M461.47421 637.236308l1.137016-310.593906 45.709185 0.166838-1.137016 310.593907z" p-id="15438"
+          fill="#1afa29"></path>
+        <path
+          d="M484.917308 884.358442c-71.877692 0-130.271175-58.393483-130.271175-130.271175s58.393483-130.271175 130.271175-130.271175 130.271175 58.393483 130.271175 130.271175-58.393483 130.271175-130.271175 130.271175z m0-214.833166c-46.623368 0-84.561991 37.938623-84.561991 84.561991s37.938623 84.561991 84.561991 84.561991 84.561991-37.938623 84.561991-84.561991-37.938623-84.561991-84.561991-84.561991zM795.511215 95.875014H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM704.092847 218.147082h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM795.511215 340.41915H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854593h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854593s-10.284566 22.854592-22.854592 22.854592zM704.092847 462.691217h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592z"
+          p-id="15439" fill="#1afa29"></path>
+      </svg>
+      <h2 class="panel-title">气象站</h2>
+      <dv-decoration6 :color="['#1afa29', '#269572']" style="width:30px; float: right;" />
+    </div>
+    <br>
+    <div class="collection-time">采集时间: {{ collectionTime }}</div>
+    <div class="data-grid">
+      <div class="data-item" v-for="(item, index) in dataItems" :key="index">
+        <span class="data-label">{{ item.label }}</span>
+        <span class="data-value">{{ item.value }}</span>
+        <span class="data-unit">{{ item.unit }}</span>
+      </div>
+    </div>
+  </section>
+</template>
+
+
 
 <style scoped>
 .header-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel-title {
+  font-size: 1.5em;
+  color: #fff;
+}
+
+.collection-time {
+  font-size: 1em;
+  color: #fff;
+  margin: 10px 0;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 10px;
+}
+
+.data-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.data-item:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .data-label {
-  /* font-size: 14px; */
+  font-size: 1em;
   background: linear-gradient(to right, #FFA500, #FFFFFF);
   -webkit-background-clip: text;
   color: transparent;
+}
+
+.data-value {
+  font-size: 1.5em;
+  color: #fff;
+}
+
+.data-unit {
+  font-size: 0.8em;
+  color: #ccc;
 }
 </style>
