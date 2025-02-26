@@ -453,7 +453,6 @@ onUnmounted(() => {
         transform: translate(-50%, -50%) rotate(360deg);
     }
 }
-
 .info-item-ico {
     width: 60px;
     height: 60px;
