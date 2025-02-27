@@ -5,7 +5,7 @@
     padding: 0;
   }
   body {
-    font-family: 'zhjd-black', sans-serif;
+    /* font-family: 'zhjd-black', sans-serif; */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
