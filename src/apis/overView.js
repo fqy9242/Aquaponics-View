@@ -10,7 +10,7 @@ export const getDeviceInfoApi = () => {
 // 获取设备预警信息
 export const getDeviceWarningApi = () => {
     return request({
-      url: "/agriculture/info/list",
+      url: "/analysis/overview/deviceWarningInfo",
       method: "get",
     });
 }

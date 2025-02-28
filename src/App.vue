@@ -22,7 +22,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <RouterView />
+  <router-view :key="$route.path + Date.now()"> </router-view>
 </template>
 <style scoped>
 

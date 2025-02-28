@@ -1,111 +1,401 @@
 <script setup>
-/**
- * by qht at 2025-2-20
- */
-import { ref, onMounted, onUnmounted } from 'vue';
-// 含水率
-const moisture = ref(0);
-// 土壤温度
-const soilTemperature = ref(0);
-// 光照强度
-const lightIntensity = ref(0);
-// ph值
-const soilPh = ref(0);
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { onBeforeRouteUpdate } from 'vue-router'
+import * as echarts from 'echarts'
 
-let ws;
+// 响应式数据
+const waterTemperature = ref(0)
+const waterPh = ref(0)
+const collectionTime = ref('')
+const tempData = ref([])
+const phData = ref([])
+
+// DOM引用
+const tempChartRef = ref(null)
+const phChartRef = ref(null)
+let tempChart = null
+let phChart = null
+
+// WebSocket实例
+let ws = null
+let messageHandler = null
+
+// 图表基础配置
+const getBaseOption = () => ({
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: 'rgba(0, 32, 64, 0.9)',
+    borderColor: '#00F7FF',
+    axisPointer: { type: 'line' }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '10%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: Array.from({ length: 20 }, (_, i) => i + 1),
+    axisLabel: { color: '#fff' }
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: { color: '#fff' },
+    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+  }
+})
+
+// 初始化图表
+const initChart = (chartInstance, data, colorConfig) => {
+  if (!chartInstance) return
+
+  chartInstance.setOption({
+    ...getBaseOption(),
+    series: [{
+      data,
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      itemStyle: { color: colorConfig.line },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: colorConfig.areaStart },
+          { offset: 1, color: colorConfig.areaEnd }
+        ])
+      }
+    }]
+  })
+}
+
+// 安全初始化图表
+const safeInitCharts = async () => {
+  await nextTick()
+
+  // 清理残留实例
+  const cleanChart = (dom) => {
+    if (!dom) return
+    const exist = echarts.getInstanceByDom(dom)
+    if (exist) echarts.dispose(exist)
+    dom.removeAttribute('_echarts_instance_')
+  }
+
+  cleanChart(tempChartRef.value)
+  cleanChart(phChartRef.value)
+
+  // 初始化新实例
+  if (tempChartRef.value) {
+    tempChart = echarts.init(tempChartRef.value)
+    initChart(tempChart, tempData.value, {
+      line: '#00F7FF',
+      areaStart: 'rgba(0, 247, 255, 0.3)',
+      areaEnd: 'rgba(0, 247, 255, 0)'
+    })
+  }
+
+  if (phChartRef.value) {
+    phChart = echarts.init(phChartRef.value)
+    initChart(phChart, phData.value, {
+      line: '#1AFA29',
+      areaStart: 'rgba(26, 250, 41, 0.3)',
+      areaEnd: 'rgba(26, 250, 41, 0)'
+    })
+  }
+}
+
+// WebSocket连接
 const connectWebSocket = () => {
-  ws = new WebSocket('ws://localhost:9000');
+  // 关闭旧连接
+  if (ws) {
+    ws.removeEventListener('message', messageHandler)
+    ws.close()
+  }
 
-  ws.onopen = () => {
-    console.log('WebSocket connection opened');
-  };
+  ws = new WebSocket('ws://localhost:9000')
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    // console.log('Received data:', data);
-    // Update the values based on the received data
-    if (data.data['02']) {
-      lightIntensity.value = data.data['02'].light || lightIntensity.value;
-      noise.value = data.data['02'].noise || noise.value;
+  messageHandler = (event) => {
+    try {
+      const data = JSON.parse(event.data)
+      if (data.data['08']) {
+        waterTemperature.value = data.data['08'].temperature || 0
+        waterPh.value = data.data['08'].ph_value || 0
+        collectionTime.value = new Date().toLocaleString()
+
+        // 更新数据队列
+        tempData.value = [...tempData.value.slice(-19), waterTemperature.value]
+        phData.value = [...phData.value.slice(-19), waterPh.value]
+
+        // 安全更新图表
+        if (tempChart && !tempChart.isDisposed()) {
+          tempChart.setOption({ series: [{ data: tempData.value }] })
+        }
+        if (phChart && !phChart.isDisposed()) {
+          phChart.setOption({ series: [{ data: phData.value }] })
+        }
+      }
+    } catch (e) {
+      console.error('数据解析失败:', e)
     }
-    if (data.data['06']) {
-      moisture.value = data.data['06'].moisture || moisture.value;
-      soilTemperature.value = data.data['06'].soil_temperature || soilTemperature.value;
-    }
-    if (data.data['05']) {
-      soilPh.value = data.data['05'].soil_ph || soilPh.value;
-    }
+  }
 
-  };
+  ws.addEventListener('open', () => console.log('WebSocket connected'))
+  ws.addEventListener('message', messageHandler)
+  ws.addEventListener('error', console.error)
+  ws.addEventListener('close', () => console.log('WebSocket disconnected'))
+}
 
-  ws.onclose = () => {
-    console.log('WebSocket connection closed');
-  };
+// 窗口resize处理
+const resizeHandler = () => {
+  if (tempChart && !tempChart.isDisposed()) tempChart.resize()
+  if (phChart && !phChart.isDisposed()) phChart.resize()
+}
 
-  ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-};
-
-onMounted(() => {
-  connectWebSocket();
-});
+// 生命周期
+onMounted(async () => {
+  await safeInitCharts()
+  connectWebSocket()
+  window.addEventListener('resize', resizeHandler)
+})
 
 onUnmounted(() => {
+  // 清理WebSocket
   if (ws) {
-    ws.close();
+    ws.removeEventListener('message', messageHandler)
+    ws.close()
+    ws = null
   }
-});
+
+  // 销毁图表
+  if (tempChart && !tempChart.isDisposed()) {
+    tempChart.dispose()
+    tempChart = null
+  }
+  if (phChart && !phChart.isDisposed()) {
+    phChart.dispose()
+    phChart = null
+  }
+
+  // 移除事件监听
+  window.removeEventListener('resize', resizeHandler)
+})
+
+// 路由更新处理
+onBeforeRouteUpdate(async (to, from, next) => {
+  // 销毁旧实例
+  if (tempChart) tempChart.dispose()
+  if (phChart) phChart.dispose()
+
+  // 重新初始化
+  await safeInitCharts()
+  next()
+})
 </script>
 
 <template>
-  <section class="panel-box weather-station-panel">
-    <svg t="1739967592286" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-      p-id="15436" width="30" height="30">
-      <path
-        d="M484.917308 1023.771454c-74.50597 0-144.441022-29.025332-197.120857-81.705167-52.679835-52.679835-81.705167-122.72916-81.705167-197.120857 0-61.821672 19.769222-120.329428 57.250754-169.238254 32.682067-42.738087 77.705613-75.534427 128.099989-93.475282V94.503738c0-52.10847 42.395268-94.503738 94.503738-94.503738C538.168508 0 580.563776 42.395268 580.563776 94.503738V179.522821h-45.709184V94.503738c0-26.968419-21.940408-48.794554-48.794554-48.794554-26.968419 0-48.794554 21.940408-48.794554 48.794554v421.552952l-16.56958 4.685191c-47.651825 13.598482-90.618458 42.966633-121.015065 82.619351-31.310791 40.90972-47.88037 89.818547-47.88037 141.469925 0 128.557081 104.559759 233.11684 233.116839 233.11684s233.11684-104.559759 233.11684-233.11684c0-51.308559-16.341033-99.874568-47.194733-140.670014-29.939516-39.424171-72.334784-68.906595-119.529517-82.847897L534.854592 516.628055V222.032362h45.709184v260.999442c49.823011 18.283674 94.389465 51.080013 126.614441 93.703828 36.910166 48.794554 56.450843 106.959491 56.450842 168.324071 0 74.50597-29.025332 144.441022-81.705167 197.120857-52.565562 52.679835-122.500614 81.590894-197.006584 81.590894z"
-        p-id="15437" fill="#1afa29"></path>
-      <path d="M461.47421 637.236308l1.137016-310.593906 45.709185 0.166838-1.137016 310.593907z" p-id="15438"
-        fill="#1afa29"></path>
-      <path
-        d="M484.917308 884.358442c-71.877692 0-130.271175-58.393483-130.271175-130.271175s58.393483-130.271175 130.271175-130.271175 130.271175 58.393483 130.271175 130.271175-58.393483 130.271175-130.271175 130.271175z m0-214.833166c-46.623368 0-84.561991 37.938623-84.561991 84.561991s37.938623 84.561991 84.561991 84.561991 84.561991-37.938623 84.561991-84.561991-37.938623-84.561991-84.561991-84.561991zM795.511215 95.875014H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM704.092847 218.147082h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592zM795.511215 340.41915H654.155563c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854593h141.355652c12.570026 0 22.854592 10.284566 22.854592 22.854593s-10.284566 22.854592-22.854592 22.854592zM704.092847 462.691217h-49.937284c-12.570026 0-22.854592-10.284566-22.854592-22.854592s10.284566-22.854592 22.854592-22.854592h49.937284c12.570026 0 22.854592 10.284566 22.854592 22.854592s-10.284566 22.854592-22.854592 22.854592z"
-        p-id="15439" fill="#1afa29"></path>
-    </svg>
-    <h2 class="panel-title">水质检测</h2>
-    <div class="data-grid">
-      <div class="data-item">
-        <span class="data-label">含水率</span>
-        <span class="data-value">{{ moisture }}</span>
-        <span class="data-unit">%</span>
+  <section class="sensor-panel">
+    <!-- 标题栏 -->
+    <div class="panel-header">
+      <svg class="header-icon" viewBox="0 0 24 24">
+        <!-- 传感器图标路径 -->
+      </svg>
+      <h2>水质实时监测系统</h2>
+      <div class="decorative-line"></div>
+    </div>
+
+    <!-- 数据展示区 -->
+    <div class="data-container">
+      <!-- 实时数据 -->
+      <div class="realtime-data">
+        <div class="data-card">
+          <div class="data-header">
+            <svg class="data-icon" viewBox="0 0 1024 1024">
+              <!-- 水温图标路径 -->
+            </svg>
+            <span class="data-title">水温监测</span>
+          </div>
+          <div class="data-value">
+            {{ waterTemperature.toFixed(1) }}
+            <span class="data-unit">°C</span>
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="data-header">
+            <svg class="data-icon" viewBox="0 0 1024 1024">
+              <!-- PH值图标路径 -->
+            </svg>
+            <span class="data-title">PH值监测</span>
+          </div>
+          <div class="data-value">
+            {{ waterPh.toFixed(1) }}
+            <span class="data-unit">pH</span>
+          </div>
+        </div>
       </div>
-      <div class="data-item">
-        <span class="data-label">土壤温度</span>
-        <span class="data-value">{{ soilTemperature }}</span>
-        <span class="data-unit">°C</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">光照强度</span>
-        <span class="data-value">{{ lightIntensity }}</span>
-        <span class="data-unit">Lux</span>
-      </div>
-      <div class="data-item">
-        <span class="data-label">PH</span>
-        <span class="data-value">{{ soilPh }}</span>
-        <span class="data-unit">PH
-        </span>
+
+      <!-- 图表区 -->
+      <div class="chart-container">
+        <div class="chart-box">
+          <div ref="tempChartRef" class="chart-container"></div>
+        </div>
+        <div class="chart-box">
+          <div ref="phChartRef" class="chart-container"></div>
+        </div>
       </div>
     </div>
-    <!-- <div class="line-chart small-chart">
-      <div class="chart-title">1#空气温度</div>
-      <div class="line-graph">
-        <div class="line"></div>
-        <div class="point" style="left: 10%; bottom: 30%;"></div>
-        <div class="point" style="left: 25%; bottom: 50%;"></div>
-        <div class="point" style="left: 40%; bottom: 70%;"></div>
-        <div class="point" style="left: 55%; bottom: 60%;"></div>
-        <div class="point" style="left: 70%; bottom: 85%;"></div>
-        <div class="point" style="left: 85%; bottom: 75%;"></div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <span>最后更新: {{ collectionTime }}</span>
+      <div class="status-indicator">
+        <div class="led"></div>
+        <span>实时连接中</span>
       </div>
-    </div> -->
+    </div>
   </section>
 </template>
+
+<style scoped>
+.sensor-panel {
+  background: linear-gradient(145deg, #0a1a2d 0%, #0c2b4d 100%);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
+  min-height: 80vh;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(26, 250, 41, 0.3);
+
+  h2 {
+    margin: 0 15px;
+    color: #00F7FF;
+    font-size: 1.4em;
+    text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+  }
+
+  .header-icon {
+    width: 32px;
+    height: 32px;
+    fill: #1AFA29;
+  }
+
+  .decorative-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg,
+        rgba(26, 250, 41, 0.3) 0%,
+        rgba(0, 247, 255, 0.3) 100%);
+  }
+}
+
+.data-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  margin: 20px 0;
+  min-height: 60vh;
+}
+
+.realtime-data {
+  display: grid;
+  gap: 15px;
+}
+
+.data-card {
+  background: rgba(0, 32, 64, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(26, 250, 41, 0.2);
+  backdrop-filter: blur(5px);
+
+  .data-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .data-icon {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      fill: #00F7FF;
+    }
+
+    .data-title {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1em;
+    }
+  }
+
+  .data-value {
+    font-size: 2.2em;
+    color: #1AFA29;
+    text-shadow: 0 0 15px rgba(26, 250, 41, 0.3);
+
+    .data-unit {
+      font-size: 0.6em;
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 5px;
+    }
+  }
+}
+
+.chart-container {
+  display: grid;
+  gap: 20px;
+
+  .chart-box {
+    background: rgba(0, 20, 40, 0.8);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid rgba(0, 247, 255, 0.2);
+    height: 300px;
+  }
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid rgba(26, 250, 41, 0.3);
+
+  span {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+
+    .led {
+      width: 12px;
+      height: 12px;
+      background: #1AFA29;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #1AFA29;
+      margin-right: 8px;
+      animation: pulse 1s infinite;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+</style>
