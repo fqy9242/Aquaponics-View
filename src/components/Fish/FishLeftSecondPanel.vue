@@ -1,246 +1,194 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import * as echarts from 'echarts';
 
-const selectedPark = ref('所有园区');
-const selectedFish = ref('所有鱼种');
-
-const parks = ['所有园区', '南宁-园区A', '南宁-园区B'];
-const fishTypes = ['所有鱼种', '罗非鱼', '鲤鱼', '草鱼'];
+const statisticTime = '2023年3月 - 2023年12月';
 
 onMounted(() => {
-  const chartDom = document.getElementById('fish-growth-chart');
-  const myChart = echarts.init(chartDom, 'dark');
+  const chartDom = document.getElementById('feed-efficiency-chart');
+  const myChart = echarts.init(chartDom);
   const option = {
-    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
+      axisPointer: { type: 'shadow' },
       backgroundColor: 'rgba(0,40,80,0.9)',
       borderColor: '#00e5ff',
-      borderWidth: 1,
-      textStyle: {
-        color: '#89f8ff',
-        fontSize: 14
-      },
-      axisPointer: {
-        type: 'shadow',
-        label: {
-          backgroundColor: '#003366'
-        }
-      }
+      textStyle: { color: '#89f8ff' }
     },
     legend: {
-      data: ['鱼体尺寸', '体重预测'],
-      right: 20,
-      top: 10,
-      textStyle: {
-        color: '#00e5ff',
-        fontSize: 14
-      },
-      itemStyle: {
-        borderColor: '#00e5ff'
-      }
+      data: ['海大牌', '通威水产', '正大生物'],
+      top: '10%',
+      textStyle: { color: '#89f8ff' }
     },
     grid: {
-      left: 60,
-      right: 40,
-      bottom: 40,
-      top: 80
+      left: '3%',
+      right: '4%',
+      bottom: '10%',
+      containLabel: true
     },
     xAxis: {
-      type: 'category',
-      data: ['3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-      axisLine: {
-        lineStyle: {
-          color: '#00e5ff'
-        }
-      },
-      axisLabel: {
-        color: '#89f8ff',
-        fontSize: 12
-      }
+      type: 'value',
+      boundaryGap: [0, 0.01],
+      axisLabel: { color: '#89f8ff' },
+      splitLine: { lineStyle: { color: 'rgba(0,229,255,0.1)' } }
     },
-    yAxis: [
-      {
-        type: 'value',
-        name: '体长（cm）',
-        nameTextStyle: {
-          color: '#00e5ff'
-        },
-        splitLine: {
-          show: true,
-          lineStyle: {
-            color: ['rgba(0,229,255,0.1)']
-          }
-        },
-        axisLabel: {
-          color: '#89f8ff',
-          formatter: '{value} cm'
-        }
-      },
-      {
-        type: 'value',
-        name: '体重（kg）',
-        nameTextStyle: {
-          color: '#91CC75'
-        },
-        splitLine: { show: false },
-        axisLabel: {
-          color: '#91CC75',
-          formatter: '{value} kg'
-        }
-      }
-    ],
+    yAxis: {
+      type: 'category',
+      data: ['1号养殖池', '2号孵化池', '3号育苗池', '4号成鱼池', '5号暂养池', '6号生态池'],
+      axisLabel: { color: '#89f8ff' }
+    },
     series: [
       {
-        name: '鱼体尺寸',
-        type: 'line',
-        data: [15, 18, 20, 25, 30, 35, 40, 45, 50, 55],
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 8,
+        name: '海大牌',
+        type: 'bar',
+        data: [182, 234, 290, 104, 131, 630],
         itemStyle: {
-          color: '#5470C6',
-          borderColor: '#00e5ff',
-          borderWidth: 2
-        },
-        lineStyle: {
-          width: 3,
-          shadowColor: 'rgba(84,112,198,0.5)',
-          shadowBlur: 10,
-          shadowOffsetY: 8
-        },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(84,112,198,0.6)' },
-            { offset: 1, color: 'rgba(84,112,198,0.1)' }
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: '#5470C6' },
+            { offset: 1, color: '#00e5ff' }
           ])
-        },
-        animationDuration: 2000
+        }
       },
       {
-        name: '体重预测',
+        name: '通威水产',
         type: 'bar',
-        yAxisIndex: 1,
-        data: [0.5, 0.8, 1.2, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5],
+        data: [193, 234, 310, 121, 134, 681],
         itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
             { offset: 0, color: '#91CC75' },
             { offset: 1, color: '#4F9D5D' }
-          ]),
-          borderRadius: [4, 4, 0, 0]
-        },
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowColor: 'rgba(145,204,117,0.5)'
-          }
-        },
-        barWidth: 16
+          ])
+        }
+      },
+      {
+        name: '正大生物',
+        type: 'bar',
+        data: [210, 230, 320, 130, 140, 720],
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: '#EE6666' },
+            { offset: 1, color: '#FF4500' }
+          ])
+        }
       }
     ]
   };
   myChart.setOption(option);
-
-  // 窗口自适应
-  window.addEventListener('resize', () => myChart.resize());
 });
 </script>
 
 <template>
-  <section class="panel-box growth-chart-container">
-    <div class="chart-header">
-      <select v-model="selectedPark" class="dropdown left-dropdown">
-        <option v-for="park in parks" :key="park" :value="park">{{ park }}</option>
-      </select>
-      <h2 class="panel-title">
-        <svg t="1740747369411" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-          p-id="6920" width="50" height="50">
-          <path d="M845.7 641h0.1l-0.1-21.1z" fill="#1296db" p-id="6921"></path>
-          <path
-            d="M872 246.6l-27.3 101.9-22.2-22.2-225 225c-8.3 8.3-21.6 8.3-29.9 0l-82.9-82.9-302.8 302.8-29.9-30.1 317.6-317.6c8.2-8.2 21.6-8.3 29.9 0l82.9 82.7 210.1-209.9-22.5-22.5 102-27.2z"
-            fill="#1296db" p-id="6922"></path>
-          <path
-            d="M780.5 774.4v-31.6h-61.4c-5.6 0-11-2.2-14.9-6.2L616.3 649 405.8 774.4c-10.5 6.3-24.2 2.3-29.7-8.6L188 393.1l37.7-19.1 177.9 352.2L609 604c8.3-5 18.9-3.6 25.8 3.2l93 93.2h52.7v-31.6l91.5 52.7-91.5 52.9z"
-            fill="#1296db" p-id="6923"></path>
-        </svg>
-        <span>鱼类生长监测仪表</span>
-      </h2>
-
-      <select v-model="selectedFish" class="dropdown right-dropdown">
-        <option v-for="fish in fishTypes" :key="fish" :value="fish">{{ fish }}</option>
-      </select>
+  <section class="panel-box">
+    <div class="header-container">
+      <div class="title-group">
+        <div class="icon-text-container">
+          <svg t="1740753423955" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="8248" width="50" height="50">
+            <path
+              d="M494.883 645.265c-73.688 0-131.379-49.92-131.379-113.623 0-53.749 53.947-113.652 131.379-113.652 66.795 0 133.222 40.843 144.993 89.174a13.33 13.33 0 0 1-25.896 6.297c-8.934-36.646-64.583-68.838-119.097-68.838-61.719 0-104.718 45.835-104.718 86.99 0 42.715 39.199 86.905 104.718 86.905 62.626 0 110.957-41.268 121.508-81.119a13.33 13.33 0 0 1 25.726 6.808c-15.203 57.634-78.51 101.058-147.234 101.058z"
+              fill="#F15A25" p-id="8249"></path>
+            <path
+              d="M446.722 631.679a13.387 13.387 0 0 1-10.58-21.443c0.227-0.255 25.442-34.263 25.442-81.97 0-47.253-24.79-77.403-25.045-77.715a13.33 13.33 0 0 1 20.337-17.217c1.248 1.475 31.37 37.468 31.37 94.96 0 57.068-29.697 96.493-30.973 98.166a13.189 13.189 0 0 1-10.551 5.219z m140.937-162.72a13.33 13.33 0 0 1-11.572-6.666c-5.304-9.104-24.222-35.454-41.41-36.9-21.103-1.645-36.107 12.196-36.306 12.338a13.302 13.302 0 1 1-18.776-18.919c0.993-0.936 23.371-22.69 57.265-19.939 34.178 2.808 59.563 45.296 62.343 50.175a13.33 13.33 0 0 1-11.544 19.91z m-84.352 83.246s-4.624 15.004 17.386 24.818c17.614 7.8 39.794-1.248 44.446-10.466 4.793-9.672-31.796-25.158-31.796-25.158s-22.01-6.978-30.036 10.806z"
+              fill="#F15A25" p-id="8250"></path>
+            <path
+              d="M405.822 513.404a16.28 16.28 0 1 0 32.561 0 16.28 16.28 0 1 0-32.561 0zM675.557 592.935a20.875 20.875 0 0 1-13.983-5.474l-40.05-36.164a13.33 13.33 0 0 1 17.87-19.769l24.874 22.52-4.51-15.004a59.364 59.364 0 0 1-0.68-32.107l2.496-9.87-24.137 22.151a13.33 13.33 0 1 1-18.04-19.655l44.049-40.333a18.578 18.578 0 0 1 30.632 18.351l-9.218 35.965a32.931 32.931 0 0 0 0.397 17.784l10.466 34.518a20.705 20.705 0 0 1-8.82 23.768 21.556 21.556 0 0 1-11.346 3.319z"
+              fill="#F15A25" p-id="8251"></path>
+            <path
+              d="M299.46 842.588h-0.653a63.93 63.93 0 0 1-55.904-33.326l-9.813-17.728a17.472 17.472 0 0 1-2.156-9.813l14.749-214.54a804.27 804.27 0 0 0 0-110.305l-14.75-214.568a17.699 17.699 0 0 1 2.157-9.814l9.813-17.727a63.817 63.817 0 0 1 55.904-33.327c22.407 0.199 41.723 10.21 53.834 28.023a63.732 63.732 0 0 1 52.585-28.023h0.653a63.817 63.817 0 0 1 53.238 28.023 63.704 63.704 0 0 1 52.585-28.023 63.477 63.477 0 0 1 53.862 28.023 63.817 63.817 0 0 1 52.614-28.023c22.095 0.199 41.24 9.899 53.436 27.342a63.619 63.619 0 0 1 52.16-27.342h0.71a63.817 63.817 0 0 1 55.847 32.25l10.353 17.896c1.786 3.035 2.552 6.58 2.325 10.07l-14.777 216.978a800.129 800.129 0 0 0 0.057 110.022l14.749 213.66a17.302 17.302 0 0 1-2.326 10.07l-10.24 17.726c-11.827 20.507-32.645 32.136-56.67 32.306a63.789 63.789 0 0 1-52.13-27.257 63.76 63.76 0 0 1-52.728 27.399h-0.71a63.874 63.874 0 0 1-52.613-28.023 63.817 63.817 0 0 1-53.181 27.881h-0.681a63.874 63.874 0 0 1-52.586-27.91 63.874 63.874 0 0 1-53.238 27.91h-0.652a63.93 63.93 0 0 1-52.585-27.88 63.817 63.817 0 0 1-53.238 28.05z m-32.76-63.675l7.261 13.132c5.19 9.275 14.579 14.862 25.187 14.976h0.312c10.466 0 19.826-5.39 25.101-14.522l10.381-17.897a17.954 17.954 0 0 1 15.572-8.878 17.727 17.727 0 0 1 20.166 8.566l9.7 17.5c5.134 9.36 14.636 14.947 25.3 15.032h0.255c10.58 0 19.997-5.36 25.272-14.55l10.268-17.699a18.351 18.351 0 0 1 15.6-8.878 17.699 17.699 0 0 1 20.137 8.595l9.672 17.471c5.162 9.36 14.636 14.948 25.272 15.033h0.284c10.58 0 20.024-5.36 25.3-14.55l10.267-17.7c3.29-5.757 9.076-8.366 15.6-8.877a17.755 17.755 0 0 1 20.166 8.594l9.786 17.699c5.162 9.275 14.493 14.862 25.13 14.976 10.154 0.142 20.137-5.333 25.441-14.522l10.353-17.898a17.755 17.755 0 0 1 14.635-8.82 17.727 17.727 0 0 1 20.223 8.537l9.672 17.472c5.19 9.36 14.607 14.947 25.272 15.032h0.312c10.551 0 19.968-5.36 25.272-14.55l7.516-12.962-14.409-208.272a848.374 848.374 0 0 1-0.056-114.871l14.465-211.534-7.63-13.217c-5.332-9.19-14.834-14.068-25.442-14.465a28.732 28.732 0 0 0-25.13 14.947l-9.955 17.84a17.642 17.642 0 0 1-20.223 8.566 17.699 17.699 0 0 1-14.635-8.849l-10.353-17.897c-5.332-9.19-15.061-14.068-25.442-14.465a28.704 28.704 0 0 0-25.13 14.947l-9.785 17.699a17.727 17.727 0 0 1-20.166 8.594 17.018 17.018 0 0 1-15.6-8.878l-10.381-17.897c-5.333-9.19-14.38-14.068-25.442-14.465a28.76 28.76 0 0 0-25.13 14.947l-9.814 17.699a17.642 17.642 0 0 1-20.138 8.594 17.869 17.869 0 0 1-15.6-8.878l-10.38-17.897a28.675 28.675 0 0 0-25.159-14.465h-0.255c-10.608 0.085-20.024 5.672-25.187 14.947l-9.813 17.727a17.755 17.755 0 0 1-20.167 8.566 17.472 17.472 0 0 1-15.571-8.878l-10.38-17.897a28.647 28.647 0 0 0-25.102-14.465h-0.34c-10.609 0.085-19.969 5.672-25.159 14.947l-7.176 13.132 14.437 209.35a848.346 848.346 0 0 1 0 115.183L266.7 778.913z"
+              fill="#0031CB" p-id="8252"></path>
+            <path
+              d="M762.519 328.9H264.715a17.784 17.784 0 0 1 0-35.538h497.832a17.755 17.755 0 1 1-0.028 35.539z m0 401.738H264.715a17.755 17.755 0 1 1 0-35.51h497.832a17.727 17.727 0 1 1-0.028 35.51z"
+              fill="#0031CB" p-id="8253"></path>
+            <path
+              d="M332.191 492.727a14.55 14.55 0 1 0 29.1 0 14.55 14.55 0 1 0-29.1 0zM332.163 401.34a23.031 23.031 0 1 0 46.062 0 23.031 23.031 0 1 0-46.062 0z"
+              fill="#F15A25" p-id="8254"></path>
+          </svg>
+          <h2 class="panel-title">饵料效能分析</h2>
+        </div>
+        <div class="time-indicator">
+          <span class="time-icon">⏳</span>
+          <span class="time-text">{{ statisticTime }}</span>
+        </div>
+      </div>
     </div>
-    <div id="fish-growth-chart" style="width:100%;height:480px;"></div>
+    <div id="feed-efficiency-chart" style="width: 100%; height: 350px;"></div>
   </section>
 </template>
 
 <style scoped>
-.growth-chart-container {
+.panel-box {
+  height: 422px;
   background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
+  padding: 20px;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
-  padding: 20px;
-  position: relative;
 }
 
-.chart-header {
+.header-container {
+  margin-bottom: 25px;
+}
+
+.title-group {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  position: relative;
+  gap: 20px;
 }
 
-.left-dropdown {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
-
-.right-dropdown {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.dropdown {
-  padding: 5px 10px;
-  border: 1px solid #00e5ff;
-  border-radius: 4px;
-  background-color: #0a1a2d;
-  color: #00e5ff;
-  font-size: 14px;
-}
-
-.dropdown:focus {
-  outline: none;
-  border-color: #00e5ff;
+.icon-text-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .panel-title {
   font-size: 22px;
   color: #00e5ff;
   text-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
-  font-family: 'Microsoft YaHei', sans-serif;
-  margin: 0 auto;
+  margin: 0;
 }
 
-.legend-icon {
-  display: inline-block;
-  width: 20px;
-  height: 12px;
-  margin-right: 8px;
-  border-radius: 2px;
+.time-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 229, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  backdrop-filter: blur(5px);
 }
 
-.size-legend .legend-icon {
-  background: linear-gradient(90deg, #5470C6 0%, #00e5ff 100%);
-  box-shadow: 0 0 8px #5470C6;
+.time-icon {
+  font-size: 16px;
+  color: #89f8ff;
+  filter: drop-shadow(0 0 3px rgba(0, 229, 255, 0.6));
 }
 
-.weight-legend .legend-icon {
-  background: linear-gradient(90deg, #91CC75 0%, #4F9D5D 100%);
-  box-shadow: 0 0 8px #91CC75;
+.time-text {
+  font-size: 14px;
+  background: linear-gradient(90deg, #00e5ff, #89f8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+}
+
+@keyframes breathing {
+  0% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.8;
+  }
+}
+
+.time-icon {
+  animation: breathing 2s ease-in-out infinite;
 }
 </style>

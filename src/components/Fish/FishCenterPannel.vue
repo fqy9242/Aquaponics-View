@@ -28,19 +28,14 @@ const campuses = [
 
 <template>
     <div class="panel-box water-quality-panel">
-        <div class="panel-title">
-            <span class="title-text">鱼菜共生运营基地</span>
-            <select class="campus-selector">
-                <option v-for="camp in campuses" :key="camp.id" :value="camp.id">{{ camp.name }}</option>
-            </select>
-        </div>
-
+        <select class="campus-selector">
+            <option v-for="camp in campuses" :key="camp.id" :value="camp.id">{{ camp.name }}</option>
+        </select>
         <!-- 顶部信息展示 -->
         <div class="base-info">
             <div class="info-item">
                 <svg t="1740534428509" class="info-item-ico" viewBox="0 0 1024 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="2161" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
                 </svg>
                 <div class="info-item-content">
                     <span class="info-item-value">{{ pools.length }}</span>
@@ -50,7 +45,6 @@ const campuses = [
             <div class="info-item days-operating">
                 <svg t="1740537765454" class="info-item-ico clock-ico" viewBox="0 0 1024 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="24217" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
                 </svg>
                 <div class="info-item-content">
                     <span class="info-item-value">328</span>
@@ -120,11 +114,11 @@ const campuses = [
                     </div>
                 </div>
             </div>
+            <button class="view-all-button">
+                <span>查看所有鱼池</span>
+                <div class="button-rays"></div>
+            </button>
         </div>
-        <button class="view-all-button">
-            <span>查看所有鱼池</span>
-            <div class="button-rays"></div>
-        </button>
     </div>
 </template>
 
@@ -147,17 +141,13 @@ const campuses = [
     color: green;
 }
 .panel-box {
-    height: 1150px;
+    height: 1050px;
     background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
 }
 
-.panel-title {
-    padding: 20px 0;
-    text-align: center;
-}
 
 .title-text {
     font-size: 28px;
