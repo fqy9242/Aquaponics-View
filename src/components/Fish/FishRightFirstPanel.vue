@@ -2,18 +2,27 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import * as echarts from 'echarts'
-import { ElDialog } from 'element-plus'
 import 'element-plus/dist/index.css'
+import { startWarningLightApi, endWarningLightApi } from '@/apis/common'
+import { ElNotification } from 'element-plus'
+// 水温是否报警
+const isTempWarning = ref(false)
+let warningNotification = null
+// 水温阈值
+const tempThreshold = 36 // 水温阈值 36告警30恢复
+// 关闭水温报警阈值
+const closeTempThreshold = 30
+
 
 // 传感器连接状态
 const senSorConnectStatus = ref(false)
 
-// 响应式数据（修复1：初始化20个数据点）
+// 响应式数据
 const waterTemperature = ref(0)
 const waterPh = ref(0)
 const collectionTime = ref('')
-const tempData = ref(Array(20).fill(0)) // 初始20个0
-const phData = ref(Array(20).fill(0))  // 初始20个0
+const tempData = ref(Array(20).fill(0))
+const phData = ref(Array(20).fill(0))
 
 // DOM引用
 const tempChartRef = ref(null)
@@ -25,6 +34,7 @@ let dialogTempChart = null
 
 // 对话框状态
 const isDialogVisible = ref(false)
+const dialogChartType = ref('temperature') // temperature | ph
 
 // WebSocket实例
 let ws = null
@@ -47,7 +57,7 @@ const getBaseOption = () => ({
   xAxis: {
     type: 'category',
     boundaryGap: false,
-    data: Array.from({ length: 20 }, (_, i) => i + 1), // 固定20个点
+    data: Array.from({ length: 20 }, (_, i) => i + 1),
     axisLabel: {
       color: '#fff',
       fontSize: 12
@@ -68,7 +78,15 @@ const getBaseOption = () => ({
   }
 })
 
-// 初始化图表（修复2：增强容错）
+// 水温报警
+const waterTemperatureWarning = async () => {
+  // 弹出报警消息
+  waterTemperatureWarningMessage()
+  // 开启报警灯
+   await startWarningLightApi()
+}
+
+// 初始化图表
 const initChart = (chartInstance, data, colorConfig) => {
   if (!chartInstance || chartInstance.isDisposed()) return
 
@@ -97,7 +115,7 @@ const initChart = (chartInstance, data, colorConfig) => {
   }
 }
 
-// 安全初始化图表（修复3：增强实例检查）
+// 安全初始化图表
 const safeInitCharts = async () => {
   await nextTick()
 
@@ -135,38 +153,56 @@ const safeInitCharts = async () => {
   cleanChart(dialogTempChartRef.value)
   if (dialogTempChartRef.value) {
     dialogTempChart = echarts.init(dialogTempChartRef.value)
-    initChart(dialogTempChart, tempData.value, {
-      line: '#00F7FF',
-      areaStart: 'rgba(0, 247, 255, 0.3)',
-      areaEnd: 'rgba(0, 247, 255, 0)'
-    })
+    const config = dialogChartType.value === 'temperature'
+      ? {
+        line: '#00F7FF',
+        areaStart: 'rgba(0, 247, 255, 0.3)',
+        areaEnd: 'rgba(0, 247, 255, 0)'
+      }
+      : {
+        line: '#1AFA29',
+        areaStart: 'rgba(26, 250, 41, 0.3)',
+        areaEnd: 'rgba(26, 250, 41, 0)'
+      }
+
+    initChart(
+      dialogTempChart,
+      dialogChartType.value === 'temperature' ? tempData.value : phData.value,
+      config
+    )
   }
 }
 
-// WebSocket连接（修复4：增强数据验证）
+// WebSocket连接
 const connectWebSocket = () => {
   if (ws) {
     ws.removeEventListener('message', messageHandler)
     ws.close()
   }
 
-  ws = new WebSocket('ws://localhost:9000')
+  ws = new WebSocket('ws://10.0.19.70:9000')
   messageHandler = (event) => {
     try {
       const data = JSON.parse(event.data)
-      if (!data?.data?.['08']) return // 数据验证
-
+      if (!data?.data?.['08']) return
       senSorConnectStatus.value = true
-
       // 更新数值
-      waterTemperature.value = Number(data.data['08'].temperature) || 0
+      waterTemperature.value = Number(data.data['08'].water_temperature) || 0
       waterPh.value = Number(data.data['08'].ph_value) || 0
       collectionTime.value = new Date().toLocaleString()
-
-      // 更新数据队列（修复5：严格保持20个点）
+      // 更新数据队列
       tempData.value = [...tempData.value.slice(1), waterTemperature.value]
       phData.value = [...phData.value.slice(1), waterPh.value]
-
+      // 水温报警
+      if (waterTemperature.value > tempThreshold && !isTempWarning.value) {
+        isTempWarning.value = true
+        waterTemperatureWarning()
+      }
+      if (waterTemperature.value <= closeTempThreshold && isTempWarning.value) {
+        isTempWarning.value = false
+        endWarningLightApi()
+        closeWaterTemperatureWarningMessage()
+      }
       // 更新图表
       const updateChart = (chart, data) => {
         if (chart && !chart.isDisposed()) {
@@ -181,7 +217,18 @@ const connectWebSocket = () => {
 
       updateChart(tempChart, tempData)
       updateChart(phChart, phData)
-      updateChart(dialogTempChart, tempData)
+
+      // 更新对话框图表
+      if (dialogTempChart && !dialogTempChart.isDisposed()) {
+        dialogTempChart.setOption({
+          series: [{
+            data: dialogChartType.value === 'temperature'
+              ? tempData.value
+              : phData.value,
+            animation: false
+          }]
+        })
+      }
 
     } catch (e) {
       console.error('数据处理错误:', e)
@@ -203,6 +250,23 @@ const resizeHandler = () => {
     if (chart && !chart.isDisposed()) chart.resize()
   })
 }
+// 水温报警消息
+const waterTemperatureWarningMessage = () => {
+  warningNotification = ElNotification({
+    title: 'Warning',
+    message: '当前水温超过阈值，请及时处理',
+    position: 'bottom-right',
+    type: 'warning',
+    duration: 0, // 不会自动关闭
+    showClose: false, // 隐藏关闭按钮
+  })
+}
+const closeWaterTemperatureWarningMessage = () => {
+  if (warningNotification) {
+    warningNotification.close()
+    warningNotification = null
+  }
+}
 
 // 生命周期
 onMounted(async () => {
@@ -212,14 +276,12 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  // 清理WebSocket
   if (ws) {
     ws.removeEventListener('message', messageHandler)
     ws.close()
     ws = null
   }
 
-  // 销毁图表
   [tempChart, phChart, dialogTempChart].forEach(chart => {
     if (chart && !chart.isDisposed()) chart.dispose()
   })
@@ -236,9 +298,10 @@ onBeforeRouteUpdate(async (to, from, next) => {
   next()
 })
 
-// 点击图表放大处理
-const toggleZoom = () => {
-  isDialogVisible.value = !isDialogVisible.value
+// 点击图表处理
+const handleChartClick = (type) => {
+  dialogChartType.value = type
+  isDialogVisible.value = true
 }
 </script>
 
@@ -290,10 +353,10 @@ const toggleZoom = () => {
 
       <!-- 图表区 -->
       <div class="chart-container">
-        <div class="chart-box" @click="toggleZoom">
+        <div class="chart-box" @click="handleChartClick('temperature')">
           <div ref="tempChartRef" class="chart"></div>
         </div>
-        <div class="chart-box">
+        <div class="chart-box" @click="handleChartClick('ph')">
           <div ref="phChartRef" class="chart"></div>
         </div>
       </div>
@@ -308,6 +371,16 @@ const toggleZoom = () => {
       </div>
     </div>
 
+    <!-- 弹窗图表 -->
+    <el-dialog v-model="isDialogVisible" width="70%" :title="dialogChartType === 'temperature' ? '水温趋势详情' : 'PH值趋势详情'"
+      center>
+      <div ref="dialogTempChartRef" class="dialog-chart"></div>
+      <template #footer>
+        <div class="dialog-footer">
+          <span class="time-range">最近20秒数据记录</span>
+        </div>
+      </template>
+    </el-dialog>
   </section>
 </template>
 
@@ -411,6 +484,7 @@ const toggleZoom = () => {
     border: 1px solid rgba(0, 247, 255, 0.2);
     height: 300px;
     transition: transform 0.3s ease;
+    cursor: pointer;
 
     &:hover {
       transform: translateY(-3px);
@@ -466,6 +540,38 @@ const toggleZoom = () => {
 
   100% {
     opacity: 0.6;
+  }
+}
+
+/* 对话框样式覆盖 */
+:deep(.el-dialog) {
+  background: linear-gradient(145deg, #0a1a2d, #0c2b4d) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 247, 255, 0.3) !important;
+}
+
+:deep(.el-dialog__header) {
+  color: #00F7FF !important;
+  border-bottom: 1px solid rgba(0, 247, 255, 0.2) !important;
+  padding: 20px !important;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.2em !important;
+  text-shadow: 0 0 8px rgba(0, 247, 255, 0.3) !important;
+}
+
+:deep(.el-dialog__body) {
+  padding: 15px 20px !important;
+}
+
+.dialog-footer {
+  padding: 10px;
+  text-align: center;
+
+  .time-range {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
   }
 }
 </style>
