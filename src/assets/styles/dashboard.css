@@ -144,14 +144,14 @@
   }
 .panel-box {
   border-radius: 12px;
-  padding: 20px;
+  padding: 10px;
   position: relative;
-  background-color: rgba(240, 248, 255, 0.05);
+  /* background-color: rgba(240, 248, 255, 0.05); */
   /* 淡蓝色背景，可选 */
-  border: 2px solid rgba(173, 255, 47, 0.5);
+  /* border: 2px solid rgba(173, 255, 47, 0.5); */
   /* 嫩绿色边框 */
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  animation: glow-border 1.5s infinite alternate;
+  /* transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  animation: glow-border 1.5s infinite alternate; */
 }
 
 @keyframes glow-border {

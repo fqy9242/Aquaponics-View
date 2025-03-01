@@ -31,7 +31,13 @@ const campuses = [
         <select class="campus-selector">
             <option v-for="camp in campuses" :key="camp.id" :value="camp.id">{{ camp.name }}</option>
         </select>
-        <!-- 顶部信息展示 -->
+
+        <h2 class="panel-title">园区鱼池管理</h2>
+        <button class="view-all-button">
+            <span>查看所有鱼池 >>></span>
+            <div class="button-rays"></div>
+        </button>
+
         <div class="base-info">
             <div class="info-item">
                 <svg t="1740534428509" class="info-item-ico" viewBox="0 0 1024 1024" version="1.1"
@@ -54,7 +60,6 @@ const campuses = [
             <div class="info-item">
                 <svg t="1740537353098" class="info-item-ico eco-ico" viewBox="0 0 1142 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="17497" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
                 </svg>
                 <div class="info-item-content">
                     <span class="info-item-value">98.7%</span>
@@ -63,30 +68,26 @@ const campuses = [
             </div>
         </div>
 
-        <!-- 鱼池立体展示 -->
+        <!-- 鱼池立体展示保持原样 -->
         <div class="pool-container">
             <div v-for="pool in pools" :key="pool.id" class="pool-item" :class="[waterQualityClass(pool.waterQuality)]">
-                <!-- 水面效果层 -->
                 <div class="water-surface">
                     <div class="wave"></div>
                     <div class="wave delay-1"></div>
                     <div class="water-bubble"></div>
                 </div>
 
-                <!-- 鱼类动画 -->
                 <div class="fish-group">
                     <div class="fish goldfish"></div>
                     <div class="fish tropical reverse"></div>
                     <div class="fish school"></div>
                 </div>
 
-                <!-- 池底生态 -->
                 <div class="pool-bottom">
                     <div class="aquatic-plant"></div>
                     <div class="pebbles"></div>
                 </div>
 
-                <!-- 数据仪表板 -->
                 <div class="dashboard">
                     <div class="pool-name">
                         <span class="pool-name">{{ pool.name }}</span>
@@ -114,15 +115,60 @@ const campuses = [
                     </div>
                 </div>
             </div>
-            <button class="view-all-button">
-                <span>查看所有鱼池</span>
-                <div class="button-rays"></div>
-            </button>
         </div>
     </div>
 </template>
 
 <style scoped>
+/* 修改后的选择器和按钮样式 */
+.campus-selector {
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    padding: 8px 35px 8px 15px;
+    font-size: 16px;
+    background: rgba(26, 250, 41, 0.1);
+    border: 1px solid rgba(26, 250, 41, 0.3);
+    border-radius: 8px;
+    appearance: none;
+    cursor: pointer;
+    color: #fff;
+    background-image: linear-gradient(45deg, #1afa29 30%, #00ff88 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.view-all-button {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #fff;
+    background: linear-gradient(135deg, #1afa29 30%, #00ff88 70%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0, 229, 255, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    z-index: 10;
+}
+
+/* 调整选择器箭头位置 */
+.campus-selector::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1afa29;
+    font-size: 12px;
+}
+
+/* 其他保持完全相同的样式 */
 .pool-fish-tag {
     display: inline-block;
     padding: 2px 8px;
@@ -134,20 +180,23 @@ const campuses = [
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease;
 }
+
 .pool-fish-tag:hover {
     background-color: #0056b3;
 }
+
 .label {
     color: green;
 }
+
 .panel-box {
     height: 1050px;
     background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
+    position: relative;
 }
-
 
 .title-text {
     font-size: 28px;
@@ -156,15 +205,14 @@ const campuses = [
     font-family: 'Microsoft YaHei', sans-serif;
 }
 
-/* 鱼池容器 */
 .pool-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
     padding: 20px;
+    margin-top: 20px;
 }
 
-/* 单个鱼池立体样式 */
 .pool-item {
     position: relative;
     height: 350px;
@@ -181,7 +229,6 @@ const campuses = [
     box-shadow: 0 15px 40px rgba(0, 120, 255, 0.4);
 }
 
-/* 水面效果 */
 .water-surface {
     position: absolute;
     top: 0;
@@ -243,7 +290,6 @@ const campuses = [
     }
 }
 
-/* 鱼类动画 */
 .fish {
     position: absolute;
     width: 50px;
@@ -292,7 +338,6 @@ const campuses = [
     }
 }
 
-/* 池底生态 */
 .pool-bottom {
     position: absolute;
     bottom: 0;
@@ -320,7 +365,6 @@ const campuses = [
         radial-gradient(circle at 50px 15px, #5d5043 2px, transparent 3px);
 }
 
-/* 数据仪表板 */
 .dashboard {
     position: absolute;
     bottom: 20px;
@@ -364,7 +408,6 @@ const campuses = [
     font-size: 14px;
 }
 
-/* 水质状态颜色 */
 .water-quality-1 .quality-light {
     background: #00ff88;
     color: #00ff88;
@@ -382,11 +425,10 @@ const campuses = [
 
 .base-info {
     height: 160px;
-    /* 改为固定高度更好控制 */
     display: flex;
     justify-content: space-between;
     padding: 20px;
-    margin: 20px 0;
+    margin: 60px 0 20px 0;
     background: linear-gradient(145deg, rgba(26, 250, 41, 0.1) 0%, rgba(0, 15, 64, 0.8) 100%);
     border-radius: 16px;
     backdrop-filter: blur(8px);
@@ -502,7 +544,6 @@ const campuses = [
             rgba(0, 72, 114, 0.6) 100%);
 }
 
-
 .days-operating {
     background: linear-gradient(45deg,
             rgba(0, 168, 255, 0.15) 0%,
@@ -538,72 +579,26 @@ const campuses = [
     }
 }
 
-
 .days-operating .info-item-title::before {
     background: #00a8ff;
     box-shadow: 0 0 8px #00a8ff;
 }
-.campus-selector {
-    position: absolute;
-    right: 30px;
-    top: 20px;
-    padding: 8px 35px 8px 15px;
-    font-size: 16px;
-    background: rgba(26, 250, 41, 0.1);
-    border: 1px solid rgba(26, 250, 41, 0.3);
-    border-radius: 8px;
-    appearance: none;
-    cursor: pointer;
-    color: #fff;
-    /* 添加此行 */
-    background-image: linear-gradient(45deg, #1afa29 30%, #00ff88 70%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    transition: all 0.3s ease;
-}
 
-.campus-selector:hover {
-    box-shadow: 0 0 15px rgba(26, 250, 41, 0.3);
-    background-image: linear-gradient(45deg, #00ff88 30%, #1afa29 70%);
-}
-
-.campus-selector::after {
-    content: "▼";
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #1afa29;
-    font-size: 12px;
-}
 .campus-selector option {
     background-color: rgb(90, 88, 88);
     color: #fff;
 }
 
-.view-all-button {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    padding: 15px 30px;
-    font-size: 18px;
-    color: #fff;
-    background: linear-gradient(45deg, #1afa29 30%, #00ff88 70%);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 8px 16px rgba(0, 229, 255, 0.3);
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
 .view-all-button:hover {
-    background: linear-gradient(45deg, #00ff88 30%, #1afa29 70%);
+    background: linear-gradient(135deg, #00ff88 30%, #1afa29 70%);
     box-shadow: 0 12px 24px rgba(0, 229, 255, 0.4);
 }
+
 .view-all-button span {
     position: relative;
     z-index: 1;
 }
+
 .view-all-button .button-rays {
     position: absolute;
     top: 50%;
@@ -614,8 +609,17 @@ const campuses = [
     transform: translate(-50%, -50%) rotate(45deg);
     transition: all 0.3s ease;
 }
+
 .view-all-button:hover .button-rays {
     transform: translate(-50%, -50%) rotate(0deg);
 }
-
+.panel-title {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #fff;
+    z-index: 9;
+}
 </style>
