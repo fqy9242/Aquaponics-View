@@ -1,13 +1,12 @@
 <template>
   <aside class="left-sidebar">
     <OverviewLeftFirstPanel />
-    <OverviewSecondPanel />
-    <AlarmInfoPanel />
+    <OverviewLeftSecondPanel />
+    <OverviewLeftThirdPanel />
   </aside>
 </template>
   <script setup>
-  import OverviewLeftFirstPanel from './OverviewLeftFirstPanel.vue';
-  import OverviewSecondPanel from './OverviewLeftSecondPanel.vue';
-  import AlarmInfoPanel from './OverViewLeftThirtPanel.vue';
-  import ProductionAnalysisPanel from './OverviewRightSecondPanel.vue';
+  import OverviewLeftFirstPanel from '@/components/OverviewLeftFirstPanel.vue';
+  import OverviewLeftSecondPanel from '@/components/OverviewLeftSecondPanel.vue';
+  import OverviewLeftThirdPanel from '@/components/OverviewLeftThirdPanel.vue';
   </script>
