@@ -25,7 +25,7 @@ const formatDate = (timestamp) => {
 
 const getDeviceWarning = async () => {
   const res = await getDeviceWarningApi();
-  warningData.value = res.rows.map(item => [
+  warningData.value = res.data.map(item => [
     item.cropBatch,
     item.partitionInfo,
     item.thresholdValue,

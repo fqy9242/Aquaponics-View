@@ -98,9 +98,6 @@ const createChart = (id, title, value) => {
     statusText.style.fontSize = '14px';
     statusText.style.fontWeight = 'bold';
     chartDom.appendChild(statusText);
-
-    // 窗口大小变化时重置图表
-    window.addEventListener('resize', () => myChart.resize());
 };
 
 // 初始化图表

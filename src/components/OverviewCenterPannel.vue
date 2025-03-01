@@ -1,543 +1,603 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import * as echarts from 'echarts';
+import geoData from '@/assets/json/450000.json';
 
-const pools = ref([
-    { id: 1, name: '鱼池1', fishName: '罗非鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.2 },
-    { id: 2, name: '鱼池2', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '良好', temperature: 22, ph: 6.8 },
-    { id: 3, name: '鱼池3', fishName: '大白鲨', fishStatus: '幼鱼', waterQuality: '优良', temperature: 26, ph: 7.5 },
-    { id: 4, name: '鱼池4', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '一般', temperature: 24, ph: 6.5 },
-    { id: 5, name: '鱼池5', fishName: '清道夫', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.0 },
-    { id: 6, name: '鱼池6', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '良好', temperature: 23, ph: 6.9 }
+// 地图数据
+const mapData = ref({
+    bases: [
+        { name: '南宁养殖基地', coord: [108.36, 22.82], data: { ph: 7.2, temp: 26, output: 650 } },
+        { name: '桂林种植园', coord: [110.28, 25.29], data: { ph: 6.9, temp: 24, output: 920 } },
+        { name: '北海育苗中心', coord: [109.12, 21.49], data: { ph: 7.1, temp: 27, output: 380 } }
+    ],
+    flowPaths: [
+        { coords: [[108.36, 22.82], [110.28, 25.29]], effect: { color: '#00ff88', speed: 0.2 } },
+        { coords: [[110.28, 25.29], [109.12, 21.49]], effect: { color: '#00e5ff', speed: 0.3 } },
+        { coords: [[109.12, 21.49], [111.27, 23.48]], effect: { color: '#00e5ff', speed: 0.3 } },
+        { coords: [[111.27, 23.48], [110.28, 25.29]], effect: { color: '#00e5ff', speed: 0.3 } },
+        { coords: [[109.33, 22.16], [108.36, 22.82]], effect: { color: '#00e5ff', speed: 0.3 } },
+    ],
+    buildings: [
+        { coord: [108.42, 22.75], type: 'control', name: '智能控制中心' },
+        { coord: [109.3, 21.55], type: 'lab', name: '水质实验室' }
+    ]
+});
+
+// 城市基地数据
+const cityBaseCounts = ref([
+    { name: '南宁市', coord: [108.36, 22.82], count: 5 },
+    { name: '桂林市', coord: [110.28, 25.29], count: 3 },
+    { name: '北海市', coord: [109.12, 21.49], count: 2 },
+    { name: '柳州市', coord: [109.4, 24.33], count: 1 },
+    { name: '梧州市', coord: [111.27, 23.48], count: 2 },
+    { name: '钦州市', coord: [109.33, 22.16], count: 2 }
 ]);
 
-const waterQualityClass = (quality) => {
-    switch (quality) {
-        case '优良': return 'water-quality-1';
-        case '良好': return 'water-quality-2';
-        case '一般': return 'water-quality-3';
-        default: return '';
-    }
+// 指标数据
+const indicators = ref({
+    totalOutput: 1950,
+    energyUsage: 0.76,
+    ecoIndex: 94
+});
+
+// 鼠标跟随处理
+const handleCardHover = (event) => {
+    const cards = document.querySelectorAll('.indicator-card');
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        card.style.setProperty('--x', `${x}px`);
+        card.style.setProperty('--y', `${y}px`);
+    });
 };
+
+// 图表初始化
+onMounted(() => {
+    const chart = echarts.init(document.getElementById('gx-map'));
+    echarts.registerMap('GuangXi', geoData);
+
+    const option = {
+        geo: {
+            map: 'GuangXi',
+            roam: false,
+            zoom: 1.1,
+            center: [108.5, 23.5],
+            label: {
+                show: true,
+                color: '#89f8ff',
+                fontSize: 12
+            },
+            itemStyle: {
+                areaColor: '#082845',
+                borderColor: '#00688B',
+                borderWidth: 1.2
+            },
+            emphasis: {
+                itemStyle: {
+                    areaColor: '#113366',
+                    borderColor: '#00e5ff'
+                },
+                label: {
+                    show: true,
+                    color: '#fff'
+                }
+            }
+        },
+        series: [
+            {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                symbol: 'circle',
+                rippleEffect: {
+                    scale: 6,
+                    brushType: 'stroke',
+                    period: 3
+                },
+                symbolSize: val => Math.sqrt(val[2]) * 12,
+                itemStyle: {
+                    color: {
+                        type: 'radial',
+                        r: 0.8,
+                        colorStops: [
+                            { offset: 0, color: '#00FF8877' },
+                            { offset: 1, color: '#00E5FF' }
+                        ]
+                    }
+                },
+                label: {
+                    show: true,
+                    formatter: params => `${params.name}\n${params.value[2]}个基地`,
+                    position: 'top',
+                    color: '#00FF88',
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    textShadowBlur: 10,
+                    textShadowColor: 'rgba(0,229,255,0.8)'
+                },
+                data: cityBaseCounts.value.map(c => ({
+                    name: c.name,
+                    value: [...c.coord, c.count]
+                }))
+            },
+            {
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                symbol: 'pin',
+                symbolSize: [45, 60],
+                itemStyle: {
+                    color: ({ data }) => data.data.ph > 7 ? '#00ff88' : '#ffd700'
+                },
+                data: mapData.value.bases.map(item => ({
+                    ...item,
+                    symbol: `image://${getSymbol(item.name)}`
+                })),
+                label: {
+                    show: true,
+                    formatter: '{b}',
+                    color: '#fff',
+                    fontSize: 14,
+                    offset: [0, 20]
+                }
+            },
+            {
+                type: 'lines',
+                coordinateSystem: 'geo',
+                polyline: true,
+                effect: {
+                    show: true,
+                    period: 4,
+                    trailLength: 0.7,
+                    symbol: 'arrow',
+                    symbolSize: 10,
+                    color: ({ data }) => data.effect.color
+                },
+                lineStyle: {
+                    color: ({ data }) => data.effect.color,
+                    width: 2,
+                    type: 'dashed',
+                    curveness: 0.2
+                },
+                data: mapData.value.flowPaths
+            },
+            {
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                symbol: 'path://M0 0 L20 0 L20 30 L0 30 Z',
+                symbolSize: [25, 30],
+                itemStyle: {
+                    color: ({ data }) => data.type === 'control' ? '#00e5ff' : '#ffd700',
+                    opacity: 0.9
+                },
+                data: mapData.value.buildings,
+                label: {
+                    show: true,
+                    formatter: '{b}',
+                    color: '#fff',
+                    fontSize: 12,
+                    offset: [0, 15]
+                }
+            }
+        ],
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(8,25,45,0.9)',
+            borderColor: '#00e5ff',
+            textStyle: {
+                color: '#fff',
+                fontSize: 14
+            },
+            formatter: params => {
+                if (params.seriesType === 'scatter') {
+                    const data = params.data;
+                    return `
+                        <div class="map-tooltip">
+                            <h3>${data.name}</h3>
+                            ${data.data ? `
+                                <p>PH值：<span class="value">${data.data.ph}</span></p>
+                                <p>水温：<span class="value">${data.data.temp}°C</span></p>
+                                <p>产量：<span class="value">${data.data.output}吨</span></p>
+                            ` : `<p>类型：${data.type === 'control' ? '控制中心' : '实验室'}</p>`}
+                        </div>`;
+                }
+                if (params.seriesType === 'effectScatter') {
+                    return `
+                        <div class="city-tooltip">
+                            <h3>${params.name}</h3>
+                            <p>基地总数：<span class="value">${params.value[2]}个</span></p>
+                            <p>管辖区域：${params.name}</p>
+                        </div>`;
+                }
+            }
+        }
+    };
+
+    chart.setOption(option);
+
+    // 数据更新定时器
+    setInterval(() => {
+        mapData.value.bases.forEach(base => {
+            base.data.ph = Math.max(6, Math.min(8, base.data.ph + (Math.random() - 0.5) * 0.1));
+        });
+        chart.setOption({
+            series: [{
+                data: mapData.value.bases.map(item => ({
+                    ...item,
+                    symbol: `image://${getSymbol(item.name)}`
+                }))
+            }]
+        });
+    }, 3000);
+});
+
+// 获取图标路径
+function getSymbol(name) {
+    const icons = {
+        '南宁养殖基地': '/fish-icon.png',
+        '桂林种植园': '/plant-icon.png',
+        '北海育苗中心': '/seedling-icon.png'
+    };
+    return icons[name] || '/default-icon.png';
+}
 </script>
 
 <template>
-    <div class="panel-box water-quality-panel">
-        <div class="panel-title">
-            <span class="title-text">鱼菜共生运营基地</span>
-        </div>
-
-        <!-- 顶部信息展示 -->
-        <div class="base-info">
-            <div class="info-item">
-                <svg t="1740534428509" class="info-item-ico" viewBox="0 0 1024 1024" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" p-id="2161" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
-                </svg>
-                <div class="info-item-content">
-                    <span class="info-item-value">{{ pools.length }}</span>
-                    <span class="info-item-title">鱼池总数</span>
-                </div>
-            </div>
-            <div class="info-item days-operating">
-                <svg t="1740537765454" class="info-item-ico clock-ico" viewBox="0 0 1024 1024" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" p-id="24217" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
-                </svg>
-                <div class="info-item-content">
-                    <span class="info-item-value">328</span>
-                    <span class="info-item-title">运营天数</span>
-                </div>
-            </div>
-            <div class="info-item">
-                <svg t="1740537353098" class="info-item-ico eco-ico" viewBox="0 0 1142 1024" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" p-id="17497" width="50" height="50">
-                    <!-- SVG路径保持原样 -->
-                </svg>
-                <div class="info-item-content">
-                    <span class="info-item-value">98.7%</span>
-                    <span class="info-item-title">资源循环率</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 鱼池立体展示 -->
-        <div class="pool-container">
-            <div v-for="pool in pools" :key="pool.id" class="pool-item" :class="[waterQualityClass(pool.waterQuality)]">
-                <!-- 水面效果层 -->
-                <div class="water-surface">
-                    <div class="wave"></div>
-                    <div class="wave delay-1"></div>
-                    <div class="water-bubble"></div>
+    <div class="panel-box">
+        <!-- 顶栏 -->
+        <div class="header">
+            <div class="cyber-border"></div>
+            <div class="title-container">
+                <div class="title-group">
+                    <h1 class="main-title">
+                        <span class="gradient-text">鱼菜共生</span>
+                        <span class="glow-text">智能监控平台</span>
+                    </h1>
+                    <div class="decorative-line"></div>
                 </div>
 
-                <!-- 鱼类动画 -->
-                <div class="fish-group">
-                    <div class="fish goldfish"></div>
-                    <div class="fish tropical reverse"></div>
-                    <div class="fish school"></div>
-                </div>
-
-                <!-- 池底生态 -->
-                <div class="pool-bottom">
-                    <div class="aquatic-plant"></div>
-                    <div class="pebbles"></div>
-                </div>
-
-                <!-- 数据仪表板 -->
-                <div class="dashboard">
-                    <div class="pool-name">
-                        <span class="pool-name">{{ pool.name }}</span> 
-                        <span class="pool-fish-tag"> {{ pool.fishStatus }}</span> 
-                        <span class="pool-fish-tag"> {{ pool.fishName }}</span> 
-                    </div>
-                    <div class="status-indicators">
-                        <div class="indicator">
-                            <span class="label">水质</span>
-                            <div class="quality-light"></div>
-                            <span class="value">{{ pool.waterQuality }}</span>
-                        </div>
-                        <div class="parameter">
-                            <div class="gauge temperature">
-                                <div class="fill"></div>
-                                <span class="value">{{ pool.temperature }}°C</span>
+                <!-- 指标卡片 -->
+                <div class="indicators-container">
+                    <div v-for="(value, key) in indicators" :key="key" class="indicator-card"
+                        @mousemove="handleCardHover">
+                        <div class="card-bg"></div>
+                        <div class="card-content">
+                            <div class="icon-wrapper">
+                                <div class="dynamic-icon" :class="key"></div>
                             </div>
-                        </div>
-                        <div class="parameter">
-                            <div class="gauge ph">
-                                <div class="fill"></div>
-                                <span class="value">PH {{ pool.ph }}</span>
+                            <div class="data-display">
+                                <span class="value">{{ value }}</span>
+                                <span class="label">{{
+                                    {
+                                        totalOutput: '总产量',
+                                        energyUsage: '单位能耗',
+                                        ecoIndex: '生态指数'
+                                    }[key]
+                                }}</span>
                             </div>
+                            <div class="unit">{{
+                                key === 'totalOutput' ? '吨' :
+                                    key === 'energyUsage' ? 'kW·h/kg' : '指数'
+                            }}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 地图容器 -->
+        <div id="gx-map" style="height: 1000px;"></div>
+
+        <!-- 时间显示 -->
+        <!-- <div class="time-control">
+            <span class="time-label">数据时间：{{ new Date().toLocaleString() }}</span>
+        </div> -->
     </div>
 </template>
 
 <style scoped>
-.pool-fish-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    margin-left: 10px;
-    font-size: 20px;
-    color: #fff;
-    background-color: #007bff;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease;
-}
-.pool-fish-tag:hover {
-    background-color: #0056b3;
-}
-.label {
-    color: green;
-}
 .panel-box {
-    height: 1150px;
-    background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
-}
-
-.panel-title {
-    padding: 20px 0;
-    text-align: center;
-}
-
-.title-text {
-    font-size: 28px;
-    color: #00f7ff;
-    text-shadow: 0 0 20px rgba(0, 247, 255, 0.6);
-    font-family: 'Microsoft YaHei', sans-serif;
-}
-
-/* 鱼池容器 */
-.pool-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-    padding: 20px;
-}
-
-/* 单个鱼池立体样式 */
-.pool-item {
+    height: 1100px;
+    /* background:
+        radial-gradient(ellipse at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 70%),
+        linear-gradient(15deg, #00090F 0%, #00111C 100%); */
     position: relative;
-    height: 350px;
-    border-radius: 20px;
-    background: linear-gradient(160deg, #24538c 0%, #4a90e0 100%);
+    border-radius: 8px;
     overflow: hidden;
-    transform-style: preserve-3d;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.3);
+    box-shadow: 0 0 60px rgba(0, 229, 255, 0.1);
 }
 
-.pool-item:hover {
-    transform: translateY(-5px) rotateX(2deg);
-    box-shadow: 0 15px 40px rgba(0, 120, 255, 0.4);
-}
-
-/* 水面效果 */
-.water-surface {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60%;
-    background: linear-gradient(180deg, rgba(74, 144, 224, 0.8) 0%, rgba(54, 119, 191, 0.6) 100%);
+.header {
+    position: relative;
+    padding: 18px 40px 25px;
+    background: rgba(8, 40, 80, 0.25);
+    backdrop-filter: blur(12px);
+    border-radius: 8px 8px 0 0;
+    box-shadow:
+        0 4px 30px rgba(0, 229, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 229, 255, 0.15);
     overflow: hidden;
+    z-index: 2;
 }
 
-.wave {
+.cyber-border {
     position: absolute;
-    bottom: 0;
-    width: 200%;
-    height: 40px;
-    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 10c20-10 40 10 60 0s40 10 60 0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/></svg>');
-    animation: wave 8s linear infinite;
-    opacity: 0.8;
+    inset: 0;
+    background:
+        repeating-linear-gradient(-45deg,
+            transparent,
+            transparent 1px,
+            rgba(0, 229, 255, 0.1) 2px,
+            rgba(0, 229, 255, 0.1) 3px),
+        linear-gradient(180deg,
+            rgba(0, 229, 255, 0.05) 0%,
+            transparent 15%,
+            transparent 85%,
+            rgba(0, 229, 255, 0.05) 100%);
+    mask:
+        linear-gradient(black, black) content-box,
+        linear-gradient(black, black);
+    mask-composite: exclude;
+    padding: 1px;
+    pointer-events: none;
 }
 
-.delay-1 {
-    animation-delay: -4s;
-    opacity: 0.6;
+.title-group {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
 }
 
-@keyframes wave {
+.gradient-text {
+    background: linear-gradient(135deg, #00e5ff 30%, #00ff88 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-shadow:
+        0 0 25px rgba(0, 229, 255, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    padding: 0 15px;
+}
+
+.glow-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 28px;
+    font-weight: 300;
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+    padding: 0 15px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 2px;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(0, 229, 255, 0.8) 50%,
+                transparent);
+        filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+    }
+}
+
+.decorative-line {
+    height: 3px;
+    background: linear-gradient(90deg,
+            transparent 10%,
+            rgba(0, 229, 255, 0.6) 50%,
+            transparent 90%);
+    margin: 15px auto;
+    width: 400px;
+    animation: lineFlow 8s infinite linear;
+    border-radius: 2px;
+}
+
+@keyframes lineFlow {
     0% {
-        transform: translateX(-50%) rotate(0deg);
+        opacity: 0.5;
+        background-position: -400px 0;
     }
 
     100% {
-        transform: translateX(0%) rotate(1deg);
-    }
-}
-
-.water-bubble {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    animation: bubble 4s infinite;
-}
-
-@keyframes bubble {
-    0% {
-        transform: translateY(0) scale(1);
-        opacity: 0;
-    }
-
-    20% {
-        transform: translateY(-20px) scale(1.2);
         opacity: 1;
-    }
-
-    100% {
-        transform: translateY(-80px) scale(0.5);
-        opacity: 0;
+        background-position: 400px 0;
     }
 }
 
-/* 鱼类动画 */
-.fish {
-    position: absolute;
-    width: 50px;
-    height: 20px;
-    background: linear-gradient(45deg, #FFD700 30%, #FFA500 70%);
-    border-radius: 10px 5px 5px 10px;
-    clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 60%);
-    animation: swim 15s linear infinite;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.goldfish {
-    top: 30%;
-    left: -30px;
-}
-
-.tropical {
-    background: linear-gradient(45deg, #00CED1 30%, #20B2AA 70%);
-    top: 45%;
-    animation-delay: -5s;
-}
-
-.reverse {
-    animation-direction: reverse;
-}
-
-.school {
-    width: 30px;
-    height: 12px;
-    top: 55%;
-    background: #FF6347;
-    animation: swim 12s linear infinite;
-}
-
-@keyframes swim {
-    0% {
-        transform: translateX(-100%) rotateY(0deg);
-    }
-
-    50% {
-        transform: translateX(100%) rotateY(180deg);
-    }
-
-    100% {
-        transform: translateX(-100%) rotateY(0deg);
-    }
-}
-
-/* 池底生态 */
-.pool-bottom {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 30%;
-    background: linear-gradient(transparent 20%, #1a472a 80%);
-}
-
-.aquatic-plant {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 80px;
-    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 Q25 5, 50 20 Q75 -5, 100 20" fill="%232E8B57"/></svg>');
-    opacity: 0.8;
-}
-
-.pebbles {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    height: 20px;
-    background: radial-gradient(circle at 10px 15px, #6b5b4d 2px, transparent 3px),
-        radial-gradient(circle at 30px 18px, #7d6e60 3px, transparent 4px),
-        radial-gradient(circle at 50px 15px, #5d5043 2px, transparent 3px);
-}
-
-/* 数据仪表板 */
-.dashboard {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    padding: 15px;
-    background: rgba(0, 20, 40, 0.9);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 229, 255, 0.3);
-}
-
-.pool-name {
-    color: #00e5ff;
-    margin: 0 0 10px;
-    font-size: 20px;
-    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-}
-
-.status-indicators {
+.indicators-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.quality-light {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    box-shadow: 0 0 8px currentColor;
-}
-
-.value {
-    color: #89f8ff;
-    font-size: 14px;
-}
-
-/* 水质状态颜色 */
-.water-quality-1 .quality-light {
-    background: #00ff88;
-    color: #00ff88;
-}
-
-.water-quality-2 .quality-light {
-    background: #ffd700;
-    color: #ffd700;
-}
-
-.water-quality-3 .quality-light {
-    background: #ff4500;
-    color: #ff4500;
-}
-
-.base-info {
-    height: 160px;
-    /* 改为固定高度更好控制 */
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    margin: 20px 0;
-    background: linear-gradient(145deg, rgba(26, 250, 41, 0.1) 0%, rgba(0, 15, 64, 0.8) 100%);
-    border-radius: 16px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(26, 250, 41, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 45, 120, 0.3);
-}
-
-.info-item {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    margin: 0 15px;
-    padding: 20px;
-    background: linear-gradient(135deg,
-            rgba(26, 250, 41, 0.15) 0%,
-            rgba(0, 28, 61, 0.5) 100%);
+.indicator-card {
+    position: relative;
+    background: rgba(8, 40, 80, 0.3);
     border-radius: 12px;
-    transition: all 0.3s ease;
+    padding: 1.5px;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
     cursor: pointer;
-    position: relative;
     overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        padding: 1.5px;
+        background: linear-gradient(135deg,
+                rgba(0, 229, 255, 0.4) 0%,
+                transparent 40%,
+                transparent 60%,
+                rgba(0, 255, 136, 0.4) 100%);
+        -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 229, 255, 0.15);
+
+        .card-bg {
+            opacity: 0.6;
+        }
+    }
 }
 
-.info-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(26, 250, 41, 0.2);
-    background: linear-gradient(135deg,
-            rgba(26, 250, 41, 0.25) 0%,
-            rgba(0, 28, 61, 0.6) 100%);
-}
-
-.info-item::before {
-    content: '';
+.card-bg {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg,
-            transparent 25%,
-            rgba(26, 250, 41, 0.1) 50%,
-            transparent 75%);
-    animation: flow 8s infinite linear;
+    inset: 0;
+    background: radial-gradient(200px circle at var(--x) var(--y),
+            rgba(0, 229, 255, 0.15),
+            transparent 60%);
+    opacity: 0.3;
+    transition: opacity 0.3s;
+    pointer-events: none;
 }
 
-@keyframes flow {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
-.info-item-ico {
-    width: 60px;
-    height: 60px;
-    margin-right: 20px;
-    filter: drop-shadow(0 0 12px #1afa29);
-    transition: transform 0.3s ease;
-}
-
-.info-item:hover .info-item-ico {
-    transform: scale(1.1) rotate(10deg);
-}
-
-.info-item-content {
+.card-content {
+    position: relative;
+    padding: 20px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    background: rgba(8, 25, 45, 0.6);
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.icon-wrapper {
+    width: 56px;
+    height: 56px;
+    margin-right: 18px;
+    background: rgba(0, 40, 80, 0.5);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    z-index: 1;
-}
 
-.info-item-value {
-    font-size: 32px;
-    font-weight: 700;
-    background: linear-gradient(45deg, #1afa29 30%, #00ff88 70%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 4px 16px rgba(26, 250, 41, 0.3);
-    margin-bottom: 8px;
-    font-family: 'Arial Rounded MT Bold', sans-serif;
-}
-
-.info-item-title {
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 1px;
-    position: relative;
-    padding-left: 24px;
-}
-
-.info-item-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 2px;
-    background: #1afa29;
-    box-shadow: 0 0 8px #1afa29;
-}
-
-.eco-ico {
-    filter: drop-shadow(0 0 10px #00ff88);
-}
-
-.info-item:nth-child(3) {
-    background: linear-gradient(45deg,
-            rgba(0, 255, 136, 0.1) 0%,
-            rgba(0, 72, 114, 0.6) 100%);
-}
-
-
-.days-operating {
-    background: linear-gradient(45deg,
-            rgba(0, 168, 255, 0.15) 0%,
-            rgba(0, 42, 85, 0.6) 100%);
-    border: 1px solid rgba(0, 198, 255, 0.3);
-}
-
-.clock-ico {
-    filter: drop-shadow(0 0 15px #00a8ff);
-}
-
-.days-operating::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(0, 198, 255, 0.2),
-            transparent);
-    animation: timeFlow 3s infinite;
-}
-
-@keyframes timeFlow {
-    0% {
-        left: -100%;
-    }
-
-    100% {
-        left: 150%;
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        pointer-events: none;
     }
 }
 
+.dynamic-icon {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 0 8px currentColor);
 
-.days-operating .info-item-title::before {
-    background: #00a8ff;
-    box-shadow: 0 0 8px #00a8ff;
+    &.totalOutput {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2300ff88" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83-3.45-1.13-6-4.82-6-8.83V6.31l6-2.12 6 2.12v4.78zM12 15c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-8c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3z"/></svg>');
+        color: #00ff88;
+    }
+
+    &.energyUsage {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2300e5ff" d="M11 20v-3H7v5h10v-5h-4.5l2.52-2.51c.33.06.66.11 1.01.11 1.66 0 3.15-.83 4.05-2.1 1.22-1.73 1.03-4.08-.5-5.57-1.11-1.08-2.7-1.47-4.16-1.17L13 2h-2v5h2V7.5l3.5 1.5-3.03 3.03c.45.88.21 1.96-.65 2.54l-6 4.27c-.39.28-.92.25-1.27-.08-.31-.29-.45-.72-.38-1.14L9 15.6l-4.3-1.86c-.58-.25-.97-.8-1-1.44-.03-.64.3-1.23.85-1.53l6-3.67.79.42c.87.46 1.91.25 2.53-.49.62-.74.57-1.8-.11-2.48l-.36-.35 2.25-2.26c.39-.39.39-1.02 0-1.41s-1.02-.39-1.41 0l-2.12 2.12-1.27-1.27c-.47-.47-1.25-.47-1.72 0l-5.66 5.66c-.78.78-.78 2.05 0 2.83s2.05.78 2.83 0l1.27-1.27 2.12 2.12c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41l-2.12-2.12 1.27-1.27c.47-.47 1.25-.47 1.72 0l1.27 1.27 2.12-2.12c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41l-2.12 2.12-1.27-1.27c-.47-.47-1.25-.47-1.72 0l-3.54 3.54c-.78.78-.78 2.05 0 2.83s2.05.78 2.83 0l1.27-1.27 2.12 2.12c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41l-2.12-2.12 1.27-1.27c.47-.47 1.25-.47 1.72 0l1.27 1.27 2.12-2.12c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41l-2.12 2.12-1.27-1.27c-.47-.47-1.25-.47 1.72 0z"/></svg>');
+        color: #00e5ff;
+    }
+
+    &.ecoIndex {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%233cb371" d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83-3.45-1.13-6-4.82-6-8.83V6.31l6-2.12 6 2.12v4.78zM12 15c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-8c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3z"/></svg>');
+        color: #3cb371;
+    }
+}
+
+.data-display {
+    flex: 1;
+
+    .value {
+        display: block;
+        color: #fff;
+        font-size: 32px;
+        font-family: 'DS-Digital', sans-serif;
+        letter-spacing: 3px;
+        text-shadow:
+            0 0 12px currentColor,
+            0 2px 4px rgba(0, 0, 0, 0.2);
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .label {
+        color: rgba(137, 248, 255, 0.9);
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+}
+
+.unit {
+    align-self: flex-end;
+    color: rgba(137, 248, 255, 0.6);
+    font-size: 12px;
+    margin-left: 8px;
+    position: relative;
+    top: -3px;
+}
+
+#gx-map {
+    width: 100%;
+    height: 1000px;
+}
+
+/* .time-control {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 40, 80, 0.8);
+    padding: 8px 25px;
+    border-radius: 20px;
+    color: #00e5ff;
+    font-size: 14px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+} */
+
+/* 工具提示样式 */
+:deep(.map-tooltip) {
+    h3 {
+        color: #00ff88 !important;
+        margin-bottom: 8px;
+    }
+
+    .value {
+        color: #00e5ff !important;
+        font-weight: bold;
+    }
+}
+
+:deep(.city-tooltip) {
+    background: linear-gradient(145deg, #00161f, #000d15) !important;
+    border: 1px solid #00e5ff !important;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3) !important;
+
+    h3 {
+        color: #00ff88 !important;
+        border-bottom: 1px solid rgba(0, 229, 255, 0.3) !important;
+    }
+
+    .value {
+        color: #00e5ff !important;
+    }
 }
 </style>
