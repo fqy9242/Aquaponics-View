@@ -10,5 +10,4 @@
   import OverviewSecondPanel from './OverviewLeftSecondPanel.vue';
   import AlarmInfoPanel from './OverViewLeftThirtPanel.vue';
   import ProductionAnalysisPanel from './OverviewRightSecondPanel.vue';
-  import { useComponentStore } from '@/stores/component';
   </script>
