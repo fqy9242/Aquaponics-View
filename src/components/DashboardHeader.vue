@@ -34,11 +34,20 @@ const switchTab = (index) => {
   }
 };
 
-// 显示当前时间
-const currentTime = ref(new Date().toLocaleString('zh-CN', { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+// 将日期和时间分开
+const currentDate = ref(formatDate(new Date()));
+const currentTime = ref(new Date().toLocaleTimeString('zh-CN'));
+
+// 新增：日期格式化函数
+function formatDate(date) {
+  const weekdays = "日一二三四五六";
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日星期${weekdays[date.getDay()]}`;
+}
 
 setInterval(() => {
-  currentTime.value = new Date().toLocaleString('zh-CN', { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const now = new Date();
+  currentDate.value = formatDate(now);
+  currentTime.value = now.toLocaleTimeString('zh-CN');
 }, 1000);
 </script>
 
@@ -53,7 +62,10 @@ setInterval(() => {
   </nav>
   <header class="dashboard-header">
     <h1 class="header-title">鱼 菜 共 生 大 数 据 监 控 中 心</h1>
-    <div class="current-time">{{ currentTime }}</div>
+    <div class="date-time">
+      <div class="current-date">{{ currentDate }}</div>
+      <div class="current-time">{{ currentTime }}</div>
+    </div>
   </header>
 </template>
 
@@ -92,9 +104,75 @@ setInterval(() => {
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-.current-time {
-  font-size: 1rem;
+/* 新增样式：日期和时间左右分布 */
+.date-time {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 20px;
   color: white;
-  margin-top: 0.5rem;
+  /* margin-top: 0.5rem; */
+}
+
+.current-date, .current-time {
+  margin-top: -50px;  
+  font-family: 'DigifaceWide', sans-serif;
+    /* 推荐使用科技感字体 */
+    font-size: 1.8em;
+    font-weight: 500;
+    letter-spacing: 2px;
+    position: relative;
+    padding: 8px 20px;
+    background: linear-gradient(90deg,
+        rgba(0, 247, 255, 0.1) 0%,
+        rgba(0, 180, 255, 0.15) 50%,
+        rgba(0, 247, 255, 0.1) 100%);
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.2);
+    animation: textGlow 2s ease-in-out infinite alternate;
+}
+/* 日期特殊样式 */
+.current-date {
+  color: #00f7ff;
+  border: 1px solid rgba(0, 247, 255, 0.3);
+}
+
+/* 时间特殊样式 */
+.current-time {
+  color: #00ff9d;
+  border: 1px solid rgba(0, 255, 157, 0.3);
+}
+/* 装饰性伪元素 */
+.current-date::before,
+.current-time::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f7ff, transparent);
+}
+
+.current-date::before {
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.current-time::after {
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 动画效果 */
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(0, 247, 255, 0.3);
+  }
+
+  100% {
+    text-shadow: 0 0 15px rgba(0, 247, 255, 0.6),
+      0 0 25px rgba(0, 247, 255, 0.3);
+  }
 }
 </style>

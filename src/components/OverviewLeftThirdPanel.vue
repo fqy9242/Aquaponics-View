@@ -43,7 +43,7 @@ const initCharts = () => {
 
 const getChartOption = (data, colorStart, colorEnd, title) => {
   const sortedData = [...data]
-    .sort((a, b) => b.value - a.value)
+    .sort((a, b) => a.value - b.value)
     .slice(0, 3)
 
   return {
