@@ -88,7 +88,7 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 300px;
+  height: 280px;
 }
 
 .chart {
