@@ -83,6 +83,13 @@ setInterval(() => {
 
 .header-title {
   margin: 0;
+  font-size: 2.5em;
+  /* 渐变文字效果，更清晰些 */
+  background: linear-gradient(90deg, rgba(0,247,255,0.9), rgba(18,150,219,0.9), rgba(26,250,41,0.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: initial;  /* 使用初始颜色作为备选 */
+  color: white;  /* 默认颜色 */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 .current-time {
