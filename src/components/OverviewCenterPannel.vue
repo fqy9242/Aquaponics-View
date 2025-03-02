@@ -50,24 +50,49 @@ const initMap = () => {
 
     echarts.registerMap('guangxi', guangxiGeoJSON)
 
+    // 定义城市数据：包含名称、坐标、基地数量与部分基地信息
+    const citiesData = [
+        { name: '南宁', value: [108.37, 22.82, 3.5], baseCount: 5, info: '基地信息：类型A、类型B' },
+        { name: '桂林', value: [110.29, 25.28, 3.5], baseCount: 2, info: '基地信息：类型C、类型D' },
+        { name: '柳州', value: [109.43, 24.33, 3.5], baseCount: 3, info: '基地信息：类型E、类型F' },
+        { name: '梧州', value: [111.27, 23.47, 3.5], baseCount: 3, info: '基地信息：类型A、类型B' },
+        { name: '钦州', value: [109.55, 22.26, 3.5], baseCount: 2, info: '基地信息：类型E、类型F' }
+    ]
+    
+    // 定义城市之间的连接 (顺序连接)
+    const connections = [
+      { from: citiesData[0].value, to: citiesData[1].value },
+      { from: citiesData[1].value, to: citiesData[2].value },
+      { from: citiesData[2].value, to: citiesData[3].value },
+      { from: citiesData[3].value, to: citiesData[4].value }
+    ]
+
     const option = {
         tooltip: {
-            formatter: params => `
-        <strong>${params.name}</strong><br>
-        规模等级：${params.value[2]}级<br>
-        经度：${params.value[0].toFixed(2)}<br>
-        纬度：${params.value[1].toFixed(2)}
-      `
+            formatter: params => {
+                if (params.data && params.data.info) {
+                    // 针对城市数据
+                    return `<strong>${params.name}</strong><br>
+                            基地数量：${params.data.baseCount}<br>
+                            ${params.data.info}`
+                }
+                return `
+                <strong>${params.name}</strong><br>
+                规模等级：${params.value[2]}级<br>
+                经度：${params.value[0].toFixed(2)}<br>
+                纬度：${params.value[1].toFixed(2)}
+                `
+            }
         },
         geo3D: {
             map: 'guangxi',
-            shading: 'realistic',
-            environment: '#000',
-            realisticMaterial: {
+            shading: 'realistic', 
+            environment: '#000',    // 背景颜色 
+            realisticMaterial: { 
                 roughness: 0.6,
                 metalness: 0
             },
-            postEffect: {
+            postEffect: { 
                 enable: true,
                 bloom: { enable: true, intensity: 0.8 }
             },
@@ -87,7 +112,8 @@ const initMap = () => {
                 padding: [3, 5],
             },
             itemStyle: {
-                areaColor: '#66cc66',
+                color: '#5ce77f', // 地图板块的颜色
+                areaColor: '#66cc66',  
                 borderColor: '#339933', // 区域边界的线颜色
                 borderWidth: 1, // 区域边界的线宽
                 opacity: 1 
@@ -98,7 +124,70 @@ const initMap = () => {
                 }
             },
             regionHeight: 3.5   // 区域厚度
-        }
+        },
+        series: [
+            {
+                // 更新的城市信息系列
+                name: '城市信息',
+                type: 'scatter3D',
+                coordinateSystem: 'geo3D',
+                symbol: 'circle',
+                symbolSize: 20,
+                itemStyle: {
+                    color: 'rgba(255, 215, 0, 0.9)', // 金黄色
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    shadowColor: 'rgba(0, 0, 0, 0.5)',
+                    shadowBlur: 10
+                },
+                label: {
+                    show: true,
+                    formatter: params => `${params.name}\n基地: ${params.data.baseCount}`,
+                    fontSize: 16,
+                    color: '#000', // 修改字体颜色为黑色
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    padding: [5, 7],
+                    borderRadius: 4,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)',
+                    shadowBlur: 5
+                },
+                emphasis: {
+                    scale: true,
+                    itemStyle: {
+                        borderColor: '#ff0',
+                        borderWidth: 3
+                    },
+                    label: {
+                        color: '#000', // 修改 emphasis 下的字体颜色为黑色
+                        fontSize: 18
+                    }
+                },
+                data: citiesData
+            },
+            {
+                // 新增连接线系列 - 使用 lines3D
+                name: '基地连接',
+                type: 'lines3D',
+                coordinateSystem: 'geo3D',
+                blendMode: 'lighter',
+                effect: {
+                  show: true,
+                  trailWidth: 2,
+                  trailLength: 0.3,
+                  trailOpacity: 1,
+                  constantSpeed: 5
+                },
+                lineStyle: {
+                  width: 2,
+                  color: '#ff0',
+                  opacity: 0.6,
+                  curveness: 0.2
+                },
+                data: connections.map(item => ({
+                  coords: [item.from, item.to]
+                }))
+              }
+        ]
     }
 
     chartInstance.setOption(option)
