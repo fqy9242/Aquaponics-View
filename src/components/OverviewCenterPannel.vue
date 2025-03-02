@@ -61,7 +61,7 @@ onMounted(() => {
         geo: {
             map: 'GuangXi',
             roam: false,
-            zoom: 1.1,
+            zoom: 1.3,
             center: [108.5, 23.5],
             label: {
                 show: true,
@@ -296,7 +296,7 @@ function getSymbol(name) {
 
 <style scoped>
 .panel-box {
-    height: 1100px;
+    height: 1160px;
     /* background:
         radial-gradient(ellipse at 50% 100%, rgba(0, 229, 255, 0.05) 0%, transparent 70%),
         linear-gradient(15deg, #00090F 0%, #00111C 100%); */

@@ -52,7 +52,7 @@ setInterval(() => {
     </ul>
   </nav>
   <header class="dashboard-header">
-    <h1 class="header-title">鱼 菜 共 生 数 据 监 控 中 心</h1>
+    <h1 class="header-title">鱼 菜 共 生 大 数 据 监 控 中 心</h1>
     <div class="current-time">{{ currentTime }}</div>
   </header>
 </template>

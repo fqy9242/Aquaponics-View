@@ -190,7 +190,7 @@ const campuses = [
 }
 
 .panel-box {
-    height: 1050px;
+    height: 1130px;
     background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
     padding: 20px;
     border-radius: 16px;

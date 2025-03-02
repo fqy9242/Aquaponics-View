@@ -1,185 +1,225 @@
 <script setup>
-/**
- * @description 农业概况左侧第一个面板
- * @date 2025-02-19
- * @author qin hui tong
- */
-import { agriculturalAreaSummaryThisYearApi } from '@/apis/overview';
-import { onMounted, ref } from 'vue';
-const agriculturalAreaSummary = ref(null);
+import { ref } from 'vue'
 
-// 获取农业概况数据
-const agriculturalAreaSummaryThisYear = async () => {
-    const res = await agriculturalAreaSummaryThisYearApi();
-    agriculturalAreaSummary.value = res.data;
-};
+// 固定数据
+const totalPlantingArea = ref(500)
+const totalBreedingArea = ref(300)
+const plantingAreaGrowth = ref(5)
+const breedingAreaGrowth = ref(-3)
 
-onMounted(() => {
-    agriculturalAreaSummaryThisYear();
-});
+// 颜色配置
+const colors = {
+    primary: '#3AAFA9',
+    secondary: '#5AE27C',
+    warning: '#FFB74D',
+    error: '#FF6B6B',
+    textPrimary: '#E0FFFE',
+    textSecondary: '#8CD3D0',
+    background: 'linear-gradient(152deg, #0B2730 0%, #0D313D 100%)'
+}
 </script>
 
 <template>
-    <section class="panel-box water-quality-panel">
-        <div class="header-container">
-            <svg t="1739709683698" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                p-id="1510" width="30" height="30">
-                <path
-                    d="M810.946385 398.138063V127.312332L763.491287 0H399.541305l-45.158883 127.567467v345.069997h76.54048v115.065854h0.127568v121.444229c19.262687 4.847564 37.75997 13.394584 54.34374 25.896195l28.957815 21.941605v-43.500507h83.811826c42.862669-15.308096 91.338306-10.715667 130.88422 14.032422V587.703318h78.198857v151.550151l5.485401-4.209727c23.089711-17.476743 50.134014-27.427005 77.816155-29.850787v-117.489637h109.197751V398.138063h-188.79985zM453.629911 76.54048h256.79331l19.517823 52.302661H435.005061L453.629911 76.54048z m-22.834576 319.684071V203.980379h303.61057v192.244172H641.664357v-104.73289h-113.79018v104.73289h-97.078842z m214.951181 284.347883h-131.394491v-30.871327h131.394491v30.871327z m0-63.783733h-131.394491v-29.085383h131.394491v29.085383z m277.459239-105.625862H507.463382V474.550976h415.742373v36.611863zM776.375601 1023.984054a112.004236 112.004236 0 0 1-67.865892-22.707009l-37.887537-28.70268c-12.756747-9.695127-30.488625-9.56756-43.117804 0l-37.887538 28.70268c-39.928617 30.23349-95.6756 30.361057-135.604217 0l-37.887537-28.70268c-12.756747-9.695127-30.488625-9.56756-43.117804 0l-37.887537 28.70268c-39.928617 30.23349-95.6756 30.361057-135.604217 0l-37.887538-28.70268c-12.756747-9.56756-30.488625-9.56756-43.117804 0l-49.496177 37.504835a38.244726 38.244726 0 1 1-46.179422-60.977249l49.496177-37.504835c39.928617-30.23349 95.803167-30.23349 135.604216 0l37.887538 28.70268c12.756747 9.56756 30.488625 9.56756 43.117804 0l37.887537-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887538 28.70268c12.756747 9.56756 30.488625 9.56756 43.117804 0l37.887537-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887537 28.70268c12.756747 9.56756 30.488625 9.56756 43.117803 0l37.887538-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887537 28.70268a38.244726 38.244726 0 1 1-46.179422 60.977249l-37.887538-28.70268c-12.756747-9.56756-30.488625-9.56756-43.117804 0l-37.887537 28.70268a112.259371 112.259371 0 0 1-67.865893 22.707009z"
-                    p-id="1511" fill="#1afa29"></path>
-                <path
-                    d="M776.375601 878.046872a112.004236 112.004236 0 0 1-67.865892-22.707009l-37.887537-28.70268c-12.756747-9.695127-30.488625-9.56756-43.117804 0l-37.887538 28.70268c-39.928617 30.23349-95.6756 30.361057-135.604217 0l-37.887537-28.70268c-12.756747-9.695127-30.488625-9.56756-43.117804 0l-37.887537 28.70268c-39.928617 30.23349-95.6756 30.361057-135.604217 0l-37.887538-28.70268c-12.756747-9.695127-30.488625-9.56756-43.117804 0l-37.887537 28.70268c-39.928617 30.23349-95.6756 30.361057-135.604217 0l-37.887538-28.70268c-12.756747-9.56756-30.488625-9.56756-43.117804 0l-49.496177 37.504835a38.244726 38.244726 0 1 1-46.179422-60.977249l49.496177-37.504835c39.928617-30.23349 95.803167-30.23349 135.604216 0l37.887538 28.70268c12.756747 9.56756 30.488625 9.56756 43.117804 0l37.887537-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887538 28.70268c12.756747 9.56756 30.488625 9.56756 43.117804 0l37.887537-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887537 28.70268c12.756747 9.56756 30.488625 9.56756 43.117803 0l37.887538-28.70268c39.928617-30.23349 95.6756-30.361057 135.604217 0l37.887537 28.70268a38.244726 38.244726 0 1 1-46.179422 60.977249l-37.887538-28.70268c-12.756747-9.56756-30.488625-9.56756-43.117804 0l-37.887537 28.70268a112.259371 112.259371 0 0 1-67.865893 22.707009z"
-                    p-id="1512" fill="#1afa29"></path>
-                <path
-                    d="M179.870128 741.294548C80.622639 741.294548 0 660.671909 0 561.42442c0-17.221608 0-69.651837 86.10804-210.231185l93.762088-153.208527 93.762088 153.208527c86.10804 140.706916 86.10804 193.137144 86.10804 210.231185 0 99.247489-80.750206 179.870128-179.870128 179.870128z m0-396.607253l-28.447545 46.434557C83.811826 501.467711 76.54048 547.009297 76.54048 561.42442c0 56.89509 46.30699 103.329648 103.329648 103.329648s103.329648-46.30699 103.329648-103.329648c0-14.415124-7.271346-59.956709-74.882103-170.302568l-28.447545-46.434557z"
-                    p-id="1513" fill="#1afa29"></path>
-                <path
-                    d="M220.436582 592.16818m-28.319977 0a28.319978 28.319978 0 1 0 56.639955 0 28.319978 28.319978 0 1 0-56.639955 0Z"
-                    p-id="1514" fill="#1afa29"></path>
-                <path
-                    d="M138.538269 563.97577m-28.319978 0a28.319978 28.319978 0 1 0 56.639955 0 28.319978 28.319978 0 1 0-56.639955 0Z"
-                    p-id="1515" fill="#1afa29"></path>
-                <path
-                    d="M192.116605 494.834203m-28.319978 0a28.319978 28.319978 0 1 0 56.639955 0 28.319978 28.319978 0 1 0-56.639955 0Z"
-                    p-id="1516" fill="#1afa29"></path>
-            </svg>
-            <h2 class="panel-title">农业概况</h2>
-        </div>
-        <div class="data_grid">
-            <!-- 种植情况 -->
-            <div class="plant">
-                <div class="overview">
-                    <img src="@/assets/imgs/ecological_agriculture.png" draggable="false">
-                    <div class="overview-text">
-                        <h1 class="info-title">总种植面积</h1>
-                        <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalCultivation + ' 亩' }}
-                        </h1>
-                    </div>
-                    <el-divider class="vertical-divider" direction="vertical" style="height: 80px; margin: 0 10px;" />
-                    <div class="rate-container">
-                        <h1 class="year-rate-text">年同比</h1>
-                        <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearCultivationRate }}</span>
+    <div class="kpi-panel">
+        <div class="kpi-container">
+            <!-- 种植面积卡片 -->
+            <div class="kpi-card" :class="{ 'growth': plantingAreaGrowth > 0, 'decline': plantingAreaGrowth < 0 }">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M16.7,13.3l-3,3c-0.4,0.4-1,0.4-1.4,0l-3-3
+              c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l1.3,1.3V8c0-0.6,0.4-1,1-1s1,0.4,1,1v5.2l1.3-1.3c0.4-0.4,1-0.4,1.4,0S17.1,12.9,16.7,13.3z" />
+                    </svg>
+                    <h3 class="card-title">种植总面积</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-value">{{ totalPlantingArea }}<span class="unit">m²</span></div>
+                    <div class="growth-rate" :class="plantingAreaGrowth > 0 ? 'positive' : 'negative'">
+                        <span class="trend-icon">{{ plantingAreaGrowth > 0 ? '↑' : '↓' }}</span>
+                        {{ Math.abs(plantingAreaGrowth) }}%
                     </div>
                 </div>
+                <div class="card-footer">年同比{{ plantingAreaGrowth > 0 ? '增长' : '下降' }}</div>
             </div>
 
-            <!-- 养殖情况 -->
-            <div class="breed">
-                <div class="overview">
-                    <img src="@/assets/imgs/breed.png" draggable="false">
-                    <div class="overview-text">
-                        <h1 class="info-title">总养殖面积</h1>
-                        <h1 class="overview-text-data">{{ agriculturalAreaSummary?.thisYearTotalBreeding + ' 亩' }}</h1>
-                    </div>
-                    <el-divider class="vertical-divider" direction="vertical" style="height: 80px; margin: 0 10px;" />
-                    <div class="rate-container">
-                        <h1 class="year-rate-text">年同比</h1>
-                        <span class="year-rate">{{ agriculturalAreaSummary?.yearOnYearBreedingRate }}</span>
+            <!-- 养殖面积卡片 -->
+            <div class="kpi-card" :class="{ 'growth': breedingAreaGrowth > 0, 'decline': breedingAreaGrowth < 0 }">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22,14h-0.7c-0.4,1.2-1.1,2.3-2.1,3.1l0.5,1.9l-1.9,0.5l-0.5-1.9c-0.9,0.5-1.9,0.8-3,0.9V22h-2v-3.1
+              c-1.8-0.2-3.4-1.1-4.6-2.4l-1.4,1.4l-1.4-1.4l1.4-1.4C6.1,14.4,5,12.8,5,11c0-2.8,2.2-5,5-5c0.7,0,1.3,0.1,1.9,0.3l1-1.9
+              C12.1,4.2,11.6,4,11,4C7.1,4,4,7.1,4,11c0,2.1,1.1,4.1,2.9,5.2C7.5,17.6,9.6,18,12,18c2.3,0,4.4-0.6,6.1-1.7C19.6,15.9,21,13.6,21,11
+              h2V14z" />
+                    </svg>
+                    <h3 class="card-title">养殖总面积</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-value">{{ totalBreedingArea }}<span class="unit">m²</span></div>
+                    <div class="growth-rate" :class="breedingAreaGrowth > 0 ? 'positive' : 'negative'">
+                        <span class="trend-icon">{{ breedingAreaGrowth > 0 ? '↑' : '↓' }}</span>
+                        {{ Math.abs(breedingAreaGrowth) }}%
                     </div>
                 </div>
+                <div class="card-footer">年同比{{ breedingAreaGrowth > 0 ? '增长' : '下降' }}</div>
             </div>
         </div>
-    </section>
+
+        <!-- 动态背景效果 -->
+        <div class="dynamic-bg">
+            <div class="scan-line"></div>
+            <div class="glow-effect"></div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+.kpi-panel {
+    position: relative;
+    height: 220px;
+    padding: 20px;
+    border-radius: 16px;
+    background: v-bind('colors.background');
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
 
+.kpi-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+}
 
-.header-container {
+.kpi-card {
+    position: relative;
+    padding: 20px;
+    background: rgba(16, 36, 48, 0.6);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(58, 175, 169, 0.2);
+    }
+
+    &.growth {
+        border-top: 2px solid #5AE27C;
+    }
+
+    &.decline {
+        border-top: 2px solid #FF6B6B;
+    }
+}
+
+.card-header {
     display: flex;
     align-items: center;
-    /* margin-bottom: 20px; */
-}
-.info-title {
-    background: linear-gradient(to right, white, #1afa29);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-}
-.panel-title {
-    color: #1afa29;
-    font-size: 20px;
-    margin-left: 12px;
-}
+    gap: 12px;
+    margin-bottom: 16px;
 
-.data_grid {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.overview {
-    display: flex;
-    align-items: center;
-    height: 120px;
-    /* padding: 15px; */
-    /* background: rgba(20, 50, 60, 0.5); */
-    border-radius: 6px;
-}
-
-img {
-    width: 80px;
-    height: 80px;
-    margin: 0 20px;
-    object-fit: contain;
-}
-
-.overview-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 160px;
-}
-
-.overview-text-data {
-    font-size: 1.4em;
-    color: #1dc1f5;
-    margin-top: 8px;
-}
-
-.vertical-divider {
-    border-left: 2px solid rgba(70, 167, 118, 0.6) !important;
-}
-
-.rate-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 100px;
-}
-
-.year-rate-text {
-    font-family: '黑体';
-    color: #32b885;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-}
-
-.year-rate {
-    color: #ffffff;
-    font-size: 1.3em;
-    font-weight: bold;
-}
-
-/* 响应式布局 */
-/* @media (max-width: 768px) {
-    .overview {
-        height: auto;
-        flex-wrap: wrap;
-        padding: 20px;
+    .icon {
+        width: 28px;
+        height: 28px;
+        color: v-bind('colors.primary');
+        filter: drop-shadow(0 0 6px rgba(58, 175, 169, 0.4));
     }
 
-    .vertical-divider {
-        display: none !important;
+    .card-title {
+        margin: 0;
+        color: v-bind('colors.textPrimary');
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+}
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 12px;
+
+    .main-value {
+        color: v-bind('colors.textPrimary');
+        font-size: 32px;
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 700;
+
+        .unit {
+            font-size: 14px;
+            color: v-bind('colors.textSecondary');
+            margin-left: 4px;
+        }
     }
 
-    .overview-text {
-        margin: 15px 0;
+    .growth-rate {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 6px;
+
+        &.positive {
+            background: rgba(90, 226, 124, 0.15);
+            color: #5AE27C;
+        }
+
+        &.negative {
+            background: rgba(255, 107, 107, 0.15);
+            color: #FF6B6B;
+        }
+
+        .trend-icon {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+    }
+}
+
+.card-footer {
+    color: v-bind('colors.textSecondary');
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.dynamic-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    .scan-line {
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(58, 175, 169, 0.08) 50%,
+                transparent 100%);
+        animation: scan 8s infinite linear;
+        transform: skew(-25deg);
     }
 
-    .rate-container {
-        width: 100%;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid rgba(70, 167, 118, 0.3);
+    .glow-effect {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 0%,
+                rgba(58, 175, 169, 0.08) 0%,
+                transparent 60%);
     }
-} */
+}
+
+@keyframes scan {
+    0% {
+        left: -50%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
 </style>

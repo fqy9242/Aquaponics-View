@@ -171,7 +171,7 @@ onMounted(() => {
         <option v-for="fish in fishTypes" :key="fish" :value="fish">{{ fish }}</option>
       </select>
     </div>
-    <div id="fish-growth-chart" style="width:100%;height:480px;"></div>
+    <div id="fish-growth-chart" style="width:100%;height:520px;"></div>
   </section>
 </template>
 
