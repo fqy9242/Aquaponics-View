@@ -1,8 +1,8 @@
 <script setup>
 import DashboardHeader from '@/components/DashboardHeader.vue';
-import AgricultureLeftSidebar from '@/components/Agriculture/AgricultureLeftSidebar.vue';
-import AgricultureCenterContent from '@/components/Agriculture/AgricultureCenterContent.vue';
-import AgricultureRightSidebar from '@/components/Agriculture/AgricultureRightSidebar.vue';
+import AgricultureLeftSidebar from '@/components/Crop/AgricultureLeftSidebar.vue';
+import AgricultureCenterContent from '@/components/Crop/AgricultureCenterContent.vue';
+import AgricultureRightSidebar from '@/components/Crop/CropRigfhtSidebar.vue';
 import BottomBox from '@/components/BottomBox.vue';
 </script>
 <template>

@@ -14,6 +14,6 @@
   // import CameraFeedPanel from './CameraFeedPanel.vue';
   // import BottomGraph from '@/components/BottomGraph.vue'
   import BachGeo from '@/components/OverviewCenterPannel.vue';
-  import centerFirstPanel from '@/components/Agriculture/AgricultureCenterFirstPanel.vue';
-  import centerSecondPanel from '@/components/Agriculture/AgricultureCenterSecondPanel.vue'
+  import centerFirstPanel from '@/components/Crop/AgricultureCenterFirstPanel.vue';
+  import centerSecondPanel from '@/components/Crop/AgricultureCenterSecondPanel.vue'
   </script>
