@@ -1,15 +1,13 @@
 <script setup>
 import { ref } from 'vue';
-
 const pools = ref([
     { id: 1, name: '鱼池1', fishName: '罗非鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.2 },
-    { id: 2, name: '鱼池2', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '良好', temperature: 22, ph: 6.8 },
-    { id: 3, name: '鱼池3', fishName: '大白鲨', fishStatus: '幼鱼', waterQuality: '优良', temperature: 26, ph: 7.5 },
-    { id: 4, name: '鱼池4', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '一般', temperature: 24, ph: 6.5 },
-    { id: 5, name: '鱼池5', fishName: '清道夫', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.0 },
-    { id: 6, name: '鱼池6', fishName: '清道夫', fishStatus: '成鱼', waterQuality: '良好', temperature: 23, ph: 6.9 }
+    { id: 2, name: '鱼池2', fishName: '鲤鱼', fishStatus: '成鱼', waterQuality: '良好', temperature: 22, ph: 6.8 },
+    { id: 3, name: '鱼池3', fishName: '鲫鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 26, ph: 7.5 },
+    { id: 4, name: '鱼池4', fishName: '草鱼', fishStatus: '成鱼', waterQuality: '一般', temperature: 24, ph: 6.5 },
+    { id: 5, name: '鱼池5', fishName: '鲢鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.0 },
+    { id: 6, name: '鱼池6', fishName: '鲳鱼', fishStatus: '成鱼', waterQuality: '良好', temperature: 23, ph: 6.9 }
 ]);
-
 const waterQualityClass = (quality) => {
     switch (quality) {
         case '优良': return 'water-quality-1';
@@ -18,7 +16,6 @@ const waterQualityClass = (quality) => {
         default: return '';
     }
 };
-
 const campuses = [
     { id: 1, name: '南宁-园区A' },
     { id: 2, name: '柳州-生态园' },

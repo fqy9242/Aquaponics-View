@@ -1,26 +1,44 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import * as echarts from 'echarts'
 import 'element-plus/dist/index.css'
 import { startWarningLightApi, endWarningLightApi } from '@/apis/common'
 import { ElNotification } from 'element-plus'
+import { useSensorData } from '@/common/GetSenSorData'
 
-// 水温报警状态
-const isTempWarning = ref(false)
-let warningNotification = null
-const tempThreshold = 36
-const closeTempThreshold = 30
+const sensorData = useSensorData()
 
-// 传感器连接状态
-const senSorConnectStatus = ref(false)
+// 用 computed 包装公共传感器数据中的字段
+const waterTemperature = computed(() => Number(sensorData.waterTemperature) || 0)
+const waterPh = computed(() => Number(sensorData.waterPhValue) || 0)
+const collectionTime = computed(() => sensorData.collectionTime)
 
-// 响应式数据
-const waterTemperature = ref(0)
-const waterPh = ref(0)
-const collectionTime = ref('')
+// 图表数据（用于本组件显示历史趋势记录）
 const tempData = ref(Array(20).fill(0))
 const phData = ref(Array(20).fill(0))
+const timeData = ref(Array(20).fill(new Date().getSeconds()))
+
+// 水温报警状态及阈值
+const isTempWarning = ref(false)
+const tempThreshold = 36
+const closeTempThreshold = 30
+let warningNotification = null
+
+// 传感器连接状态（如果需要，可从公共模块扩充，目前默认已连接）
+const senSorConnectStatus = ref(true)
+
+// DOM 引用以及图表实例
+const tempChartRef = ref(null)
+const phChartRef = ref(null)
+const dialogTempChartRef = ref(null)
+let tempChart = null
+let phChart = null
+let dialogTempChart = null
+
+// 对话框状态
+const isDialogVisible = ref(false)
+const dialogChartType = ref('temperature')
 
 // 图表颜色配置
 const tempNormalColor = {
@@ -33,22 +51,6 @@ const tempWarningColor = {
   areaStart: 'rgba(255, 0, 0, 0.3)',
   areaEnd: 'rgba(255, 0, 0, 0)'
 }
-
-// DOM引用
-const tempChartRef = ref(null)
-const phChartRef = ref(null)
-const dialogTempChartRef = ref(null)
-let tempChart = null
-let phChart = null
-let dialogTempChart = null
-
-// 对话框状态
-const isDialogVisible = ref(false)
-const dialogChartType = ref('temperature')
-
-// WebSocket实例
-let ws = null
-let messageHandler = null
 
 // 图表基础配置
 const getBaseOption = () => ({
@@ -67,7 +69,7 @@ const getBaseOption = () => ({
   xAxis: {
     type: 'category',
     boundaryGap: false,
-    data: Array.from({ length: 20 }, (_, i) => i + 1),
+    data: timeData.value,
     axisLabel: {
       color: '#fff',
       fontSize: 12
@@ -85,13 +87,12 @@ const getBaseOption = () => ({
         type: 'dashed'
       }
     }
-  },
+  }
 })
 
-// 更新图表颜色（修改合并参数为 false，保持数据）
+// 更新图表颜色
 const updateChartColor = (chart, colorConfig) => {
   if (!chart || chart.isDisposed()) return
-
   chart.setOption({
     series: [{
       itemStyle: { color: colorConfig.line },
@@ -102,7 +103,7 @@ const updateChartColor = (chart, colorConfig) => {
         ])
       }
     }]
-  }, false) // 修改此处为 false，合并现有配置，保留数据
+  }, false)
 }
 
 // 水温报警处理
@@ -114,8 +115,6 @@ const waterTemperatureWarning = async () => {
     updateChartColor(dialogTempChart, tempWarningColor)
   }
 }
-
-// 解除报警处理
 const closeWaterTemperatureWarningMessage = () => {
   if (warningNotification) {
     warningNotification.close()
@@ -127,11 +126,20 @@ const closeWaterTemperatureWarningMessage = () => {
     updateChartColor(dialogTempChart, tempNormalColor)
   }
 }
+const waterTemperatureWarningMessage = () => {
+  warningNotification = ElNotification({
+    title: 'Warning',
+    message: '当前水温超过阈值，请及时处理',
+    position: 'bottom-right',
+    type: 'warning',
+    duration: 0,
+    showClose: false,
+  })
+}
 
 // 初始化图表
 const initChart = (chartInstance, data, colorConfig) => {
   if (!chartInstance || chartInstance.isDisposed()) return
-
   chartInstance.setOption({
     ...getBaseOption(),
     series: [{
@@ -151,24 +159,20 @@ const initChart = (chartInstance, data, colorConfig) => {
   }, true)
 }
 
-// 安全初始化图表
+// 安全初始化图表，处理重绘前清理旧实例
 const safeInitCharts = async () => {
   await nextTick()
-
   const cleanChart = (dom) => {
     if (!dom) return
     const exist = echarts.getInstanceByDom(dom)
     if (exist && !exist.isDisposed()) exist.dispose()
     dom.removeAttribute('_echarts_instance_')
   }
-
   cleanChart(tempChartRef.value)
   if (tempChartRef.value) {
     tempChart = echarts.init(tempChartRef.value)
-    initChart(tempChart, tempData.value,
-      isTempWarning.value ? tempWarningColor : tempNormalColor)
+    initChart(tempChart, tempData.value, isTempWarning.value ? tempWarningColor : tempNormalColor)
   }
-
   cleanChart(phChartRef.value)
   if (phChartRef.value) {
     phChart = echarts.init(phChartRef.value)
@@ -178,142 +182,87 @@ const safeInitCharts = async () => {
       areaEnd: 'rgba(26, 250, 41, 0)'
     })
   }
-
   cleanChart(dialogTempChartRef.value)
   if (dialogTempChartRef.value) {
     dialogTempChart = echarts.init(dialogTempChartRef.value)
     const isTemp = dialogChartType.value === 'temperature'
-    const colorConfig = isTemp ?
-      (isTempWarning.value ? tempWarningColor : tempNormalColor) : {
-        line: '#1AFA29',
-        areaStart: 'rgba(26, 250, 41, 0.3)',
-        areaEnd: 'rgba(26, 250, 41, 0)'
-      }
-
-    initChart(
-      dialogTempChart,
-      isTemp ? tempData.value : phData.value,
-      colorConfig
-    )
+    const colorConfig = isTemp ? (isTempWarning.value ? tempWarningColor : tempNormalColor) : {
+      line: '#1AFA29',
+      areaStart: 'rgba(26, 250, 41, 0.3)',
+      areaEnd: 'rgba(26, 250, 41, 0)'
+    }
+    initChart(dialogTempChart, isTemp ? tempData.value : phData.value, colorConfig)
   }
 }
 
-// WebSocket连接
-const connectWebSocket = () => {
-  if (ws) {
-    ws.removeEventListener('message', messageHandler)
-    ws.close()
-  }
+// 每次传感器数据更新时更新图表数据（这里通过 collectionTime 发生变化来触发）
+const updateCharts = () => {
+  const currentTemp = waterTemperature.value
+  const currentPH = waterPh.value
+  const second = new Date().getSeconds()
+  tempData.value = [...tempData.value.slice(1), currentTemp]
+  phData.value = [...phData.value.slice(1), currentPH]
+  timeData.value = [...timeData.value.slice(1), second]
 
-  ws = new WebSocket('ws://10.0.19.70:9000')
-  messageHandler = (event) => {
-    try {
-      const data = JSON.parse(event.data)
-      if (!data?.data?.['08']) return
-      senSorConnectStatus.value = true
-      waterTemperature.value = Number(data.data['08'].water_temperature) || 0
-      waterPh.value = Number(data.data['08'].ph_value) || 0
-      collectionTime.value = new Date().toLocaleString()
-      tempData.value = [...tempData.value.slice(1), waterTemperature.value]
-      phData.value = [...phData.value.slice(1), waterPh.value]
-
-      if (waterTemperature.value > tempThreshold && !isTempWarning.value) {
-        isTempWarning.value = true
-        waterTemperatureWarning()
-      }
-      if (waterTemperature.value <= closeTempThreshold && isTempWarning.value) {
-        isTempWarning.value = false
-        closeWaterTemperatureWarningMessage()
-      }
-
-      const updateChart = (chart, data) => {
-        if (chart && !chart.isDisposed()) {
-          chart.setOption({
-            series: [{
-              data: data.value,
-              animation: false
-            }]
-          })
-        }
-      }
-
-      updateChart(tempChart, tempData)
-      updateChart(phChart, phData)
-
-      // 重新更新图表颜色，根据当前水温报警状态
-      if (tempChart && !tempChart.isDisposed()) {
-        updateChartColor(tempChart, isTempWarning.value ? tempWarningColor : tempNormalColor)
-      }
-      if (dialogTempChart && !dialogTempChart.isDisposed() && dialogChartType.value === 'temperature') {
-        updateChartColor(dialogTempChart, isTempWarning.value ? tempWarningColor : tempNormalColor)
-      }
-      
-      if (dialogTempChart && !dialogTempChart.isDisposed()) {
-        dialogTempChart.setOption({
-          series: [{
-            data: dialogChartType.value === 'temperature'
-              ? tempData.value
-              : phData.value,
-            animation: false
-          }]
-        })
-      }
-
-    } catch (e) {
-      console.error('数据处理错误:', e)
+  const updateChart = (chart, data) => {
+    if (chart && !chart.isDisposed()) {
+      chart.setOption({
+        series: [{ data: data.value, animation: false }],
+        xAxis: { data: timeData.value }
+      })
     }
   }
+  updateChart(tempChart, tempData)
+  updateChart(phChart, phData)
 
-  ws.addEventListener('open', () => console.log('WebSocket connected'))
-  ws.addEventListener('message', messageHandler)
-  ws.addEventListener('error', (e) => console.error('WebSocket error:', e))
-  ws.addEventListener('close', () => {
-    console.log('WebSocket disconnected')
-    senSorConnectStatus.value = false
-  })
+  if (currentTemp > tempThreshold && !isTempWarning.value) {
+    isTempWarning.value = true
+    waterTemperatureWarning()
+  }
+  if (currentTemp <= closeTempThreshold && isTempWarning.value) {
+    isTempWarning.value = false
+    closeWaterTemperatureWarningMessage()
+  }
+  if (tempChart && !tempChart.isDisposed()) {
+    updateChartColor(tempChart, isTempWarning.value ? tempWarningColor : tempNormalColor)
+  }
+  if (dialogTempChart && !dialogTempChart.isDisposed() && dialogChartType.value === 'temperature') {
+    updateChartColor(dialogTempChart, isTempWarning.value ? tempWarningColor : tempNormalColor)
+  }
+  if (dialogTempChart && !dialogTempChart.isDisposed()) {
+    dialogTempChart.setOption({
+      series: [{
+        data: dialogChartType.value === 'temperature' ? tempData.value : phData.value,
+        animation: false
+      }],
+      xAxis: { data: timeData.value }
+    })
+  }
 }
 
-// 窗口resize处理
+// 监听 collectionTime 的变化来触发图表更新（假设每次数据更新都会更新 collectionTime）
+watch(collectionTime, () => {
+  updateCharts()
+}, { immediate: true })
+
+// 处理窗口 resize
 const resizeHandler = () => {
   [tempChart, phChart, dialogTempChart].forEach(chart => {
     if (chart && !chart.isDisposed()) chart.resize()
   })
 }
 
-// 水温报警消息
-const waterTemperatureWarningMessage = () => {
-  warningNotification = ElNotification({
-    title: 'Warning',
-    message: '当前水温超过阈值，请及时处理',
-    position: 'bottom-right',
-    type: 'warning',
-    duration: 0,
-    showClose: false,
-  })
-}
-
 // 生命周期
 onMounted(async () => {
   await safeInitCharts()
-  connectWebSocket()
   window.addEventListener('resize', resizeHandler)
 })
-
 onUnmounted(() => {
-  if (ws) {
-    ws.removeEventListener('message', messageHandler)
-    ws.close()
-    ws = null
-  }
-
   [tempChart, phChart, dialogTempChart].forEach(chart => {
     if (chart && !chart.isDisposed()) chart.dispose()
   })
-
   window.removeEventListener('resize', resizeHandler)
 })
-
-// 路由更新处理
 onBeforeRouteUpdate(async (to, from, next) => {
   [tempChart, phChart, dialogTempChart].forEach(chart => {
     if (chart && !chart.isDisposed()) chart.dispose()
@@ -322,29 +271,27 @@ onBeforeRouteUpdate(async (to, from, next) => {
   next()
 })
 
-// 点击图表处理
+// 点击图表时显示对话框
 const handleChartClick = (type) => {
   dialogChartType.value = type
   isDialogVisible.value = true
   nextTick(() => {
     if (dialogTempChart && !dialogTempChart.isDisposed()) {
-      const colorConfig = type === 'temperature' ?
-        (isTempWarning.value ? tempWarningColor : tempNormalColor) : {
-          line: '#1AFA29',
-          areaStart: 'rgba(26, 250, 41, 0.3)',
-          areaEnd: 'rgba(26, 250, 41, 0)'
-        }
+      const colorConfig = type === 'temperature' ? (isTempWarning.value ? tempWarningColor : tempNormalColor) : {
+        line: '#1AFA29',
+        areaStart: 'rgba(26, 250, 41, 0.3)',
+        areaEnd: 'rgba(26, 250, 41, 0)'
+      }
       updateChartColor(dialogTempChart, colorConfig)
     }
   })
 }
 
-// 在现有代码后添加 watcher
+// 监听对话框显示状态以初始化对话框图表
 watch(isDialogVisible, async (visible) => {
   if (visible) {
     await nextTick()
     if (dialogTempChartRef.value) {
-      // 重新初始化对话框图表
       if (dialogTempChart && !dialogTempChart.isDisposed()) dialogTempChart.dispose()
       dialogTempChart = echarts.init(dialogTempChartRef.value)
       const isTemp = dialogChartType.value === 'temperature'
