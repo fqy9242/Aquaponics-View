@@ -29,7 +29,7 @@ const indicators = ref({
     vegTypes: 19,
     area: '2,000',
     seedlings: '500',
-    planting: '8,000',
+    planting: '8,00',
     waterSave: '9,000',
     fertilizerReduce: '2,000',
     economy: '6,000',
@@ -261,7 +261,7 @@ const initMap = () => {
                     <div class="content">
                         <div class="label">种植规模</div>
                         <div class="value">{{ indicators.planting }}</div>
-                        <div class="unit">平方米</div>
+                        <div class="unit">亩</div>
                     </div>
                 </div>
 

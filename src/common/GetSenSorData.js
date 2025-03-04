@@ -3,6 +3,8 @@
  * @author qht
  * @Date 2021-03-03
  */
+
+// TODO webSocket自动重连好像有点问题 需要排查及修复
 import { reactive } from "vue";
 import config from "@/../config.json";
 const sensorData = reactive({
