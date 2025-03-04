@@ -5,7 +5,7 @@ import { ref } from 'vue'
 const farmMetrics = ref([
     {
         title: '当前种植面积',
-        value: '556亩',
+        value: '800亩',
         icon: 'M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm138-209.8H511.3v-62.4c0-43.8 25.6-68.2 70.1-92 39.3-21.6 56.2-35.2 56.2-55.8 0-28.3-22.7-46.5-53.5-46.5-31.4 0-52 19.9-52 47.5h-72.6c0-66 51.4-112 127.3-112 72.2 0 124 43.6 124 105 0 50.4-29 76.5-76 99.3-34.1 16.3-47.2 25.2-47.2 48.9V650h149v72.2zm-148-84.4h152v38.6h-152v-38.6z',
         color: 'linear-gradient(135deg, #1afa29 0%, #00b4ff 100%)'
     },
@@ -124,15 +124,5 @@ const farmMetrics = ref([
     font-weight: bold;
     font-family: 'DigifaceWide', sans-serif;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-@media (max-width: 768px) {
-    .metric-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .metric-card {
-        padding: 15px;
-    }
 }
 </style>
