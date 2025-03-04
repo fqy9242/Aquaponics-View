@@ -48,8 +48,8 @@ onMounted(() => {
     </div>
 
     <div class="alarm-table-container" ref="tableContainer"
-      style="overflow: hidden; height: 229px; position: relative;">
-      <dv-scroll-board :config="config" style="width:100%;height:220px" />
+      style="overflow: hidden; height: 297px; position: relative;">
+      <dv-scroll-board :config="config" style="width:100%;height:280px" />
     </div>
   </section>
 </template>

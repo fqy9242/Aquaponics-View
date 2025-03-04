@@ -65,7 +65,7 @@ const scrollBoard = ref(null)
 
 <style scoped>
 .panel-box {
-    background: rgba(9, 44, 88, 0.7);
+    /* background: rgba(9, 44, 88, 0.7); */
     border: 1px solid rgba(0, 180, 255, 0.2);
     border-radius: 8px;
     padding: 15px;

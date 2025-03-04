@@ -1,4 +1,4 @@
 {
     "getSensorDataWsUrl" : "ws://10.0.19.70:9000", 
-    "OperationWarningLightApiHost": "localhost"
+    "OperationWarningLightApiHost": "10.0.19.1:18081"
 }

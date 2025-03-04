@@ -21,11 +21,17 @@ const timeData = ref(Array(20).fill(new Date().getSeconds()))
 
 // 水温报警状态及阈值
 const isTempWarning = ref(false)
-const tempThreshold = 36
-const closeTempThreshold = 30
+const tempThreshold = 35
+// 关闭水温报警阈值
+const closeTempThreshold = 33
 let warningNotification = null
+// 折线图边框颜色
+const chartBorderColor = {
+  normal: 'rgba(0, 247, 255, 0.2)', // 正常状态 => 蓝色
+  warning: '#ff0000'  // 报警颜色 => 红色
+}
 
-// 传感器连接状态（如果需要，可从公共模块扩充，目前默认已连接）
+// 传感器连接状态
 const senSorConnectStatus = ref(true)
 
 // DOM 引用以及图表实例
@@ -52,7 +58,7 @@ const tempWarningColor = {
   areaEnd: 'rgba(255, 0, 0, 0)'
 }
 
-// 图表基础配置
+// 基础图表配置
 const getBaseOption = () => ({
   tooltip: {
     trigger: 'axis',
@@ -63,7 +69,7 @@ const getBaseOption = () => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '10%',
+    bottom: '5%', // 修改由 '10%' -> '5%'
     containLabel: true
   },
   xAxis: {
@@ -84,6 +90,25 @@ const getBaseOption = () => ({
     splitLine: {
       lineStyle: {
         color: 'rgba(255,255,255,0.1)',
+        type: 'dashed'
+      }
+    }
+  }
+})
+
+// 对话框专用图表配置
+const getDialogOption = () => ({
+  yAxis: {
+    type: 'value',
+    min: 10,
+    interval: 1,
+    axisLabel: {
+      color: '#fff',
+      fontSize: 14
+    },
+    splitLine: {
+      lineStyle: {
+        color: 'rgba(255,255,255,0.2)',
         type: 'dashed'
       }
     }
@@ -138,15 +163,18 @@ const waterTemperatureWarningMessage = () => {
 }
 
 // 初始化图表
-const initChart = (chartInstance, data, colorConfig) => {
+const initChart = (chartInstance, data, colorConfig, isDialog = false) => {
   if (!chartInstance || chartInstance.isDisposed()) return
+  const baseOption = isDialog ? { ...getBaseOption(), ...getDialogOption() } : getBaseOption()
+  const labelOption = isDialog ? { show: true, position: 'top', fontSize: 12, color: '#fff', fontWeight: 'bold' } : { show: false }
   chartInstance.setOption({
-    ...getBaseOption(),
+    ...baseOption,
     series: [{
       data,
       type: 'line',
+      label: labelOption, // 根据是否对话框显示标签
       smooth: true,
-      symbol: 'none',
+      symbol: 'circle',
       itemStyle: { color: colorConfig.line },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -191,11 +219,11 @@ const safeInitCharts = async () => {
       areaStart: 'rgba(26, 250, 41, 0.3)',
       areaEnd: 'rgba(26, 250, 41, 0)'
     }
-    initChart(dialogTempChart, isTemp ? tempData.value : phData.value, colorConfig)
+    initChart(dialogTempChart, isTemp ? tempData.value : phData.value, colorConfig, true)
   }
 }
 
-// 每次传感器数据更新时更新图表数据（这里通过 collectionTime 发生变化来触发）
+// 每次传感器数据更新时更新图表数据
 const updateCharts = () => {
   const currentTemp = waterTemperature.value
   const currentPH = waterPh.value
@@ -240,7 +268,7 @@ const updateCharts = () => {
   }
 }
 
-// 监听 collectionTime 的变化来触发图表更新（假设每次数据更新都会更新 collectionTime）
+// 监听 collectionTime 的变化来触发图表更新
 watch(collectionTime, () => {
   updateCharts()
 }, { immediate: true })
@@ -298,7 +326,7 @@ watch(isDialogVisible, async (visible) => {
       const colorConfig = isTemp
         ? (isTempWarning.value ? tempWarningColor : tempNormalColor)
         : { line: '#1AFA29', areaStart: 'rgba(26, 250, 41, 0.3)', areaEnd: 'rgba(26, 250, 41, 0)' }
-      initChart(dialogTempChart, isTemp ? tempData.value : phData.value, colorConfig)
+      initChart(dialogTempChart, isTemp ? tempData.value : phData.value, colorConfig, true)
     }
   }
 })
@@ -322,25 +350,7 @@ watch(isDialogVisible, async (visible) => {
 
     <div class="data-container">
       <div class="realtime-data">
-        <div class="data-card" :class="{ 'warning-active': isTempWarning }">
-          <div class="data-header">
-            <svg t="1740889995163" class="data-icon" viewBox="0 0 1024 1024" version="1.1"
-              xmlns="http://www.w3.org/2000/svg" p-id="17508" width="50" height="50">
-              <path
-                d="M511.996 804.211c68.808 0 124.587-55.781 124.587-124.589 0-46.114-25.055-86.374-62.292-107.917v-37.437h41.53c22.935 0 41.53-18.593 41.53-41.53s-18.595-41.53-41.53-41.53h-41.53v-41.53h20.763c22.937 0 41.53-18.593 41.53-41.53s-18.593-41.53-41.53-41.53h-20.763v-41.53h20.763c22.937 0 41.53-18.593 41.53-41.53s-18.593-41.53-41.53-41.53h-20.763v-41.53c0-34.405-27.891-62.294-62.294-62.294-34.405 0-62.294 27.889-62.294 62.294v411.203c-37.239 21.542-62.294 61.802-62.294 107.917-0.002 68.813 55.779 124.593 124.587 124.593z m311.473-145.354c-11.471 0-20.767 9.296-20.767 20.765 0 22.935-18.593 41.53-41.528 41.53-22.937 0-41.53-18.595-41.53-41.53 0-11.468-9.298-20.765-20.767-20.765-11.468 0-20.763 9.296-20.763 20.765 0 45.872 37.186 83.059 83.059 83.059 45.872 0 83.057-37.188 83.057-83.059 0.001-11.468-9.295-20.765-20.761-20.765z m-519.123 83.058c0 11.468 9.296 20.767 20.765 20.767 11.468 0 20.765-9.298 20.765-20.767 0-45.872-37.188-83.057-83.059-83.057-45.872 0-83.059 37.186-83.059 83.057 0 11.468 9.296 20.767 20.765 20.767 11.47 0 20.765-9.298 20.765-20.767 0-22.935 18.593-41.528 41.53-41.528s41.528 18.593 41.528 41.528z m421.337 129.479c-16.066 17.156-42.115 17.156-58.179 0l-29.089 31.066c32.129 34.31 84.224 34.312 116.356-0.002 8.034-8.578 8.034-22.486 0-31.064-8.035-8.58-21.056-8.578-29.088 0z m-349.071 0.002v-0.002l-0.002 0.002c-16.066 17.158-42.113 17.158-58.179 0-8.034-8.578-21.055-8.578-29.089 0-8.032 8.578-8.034 22.486 0 31.064 32.131 34.314 84.226 34.314 116.358 0v-0.002c16.066-17.154 42.113-17.154 58.179 0.002l15.023-16.043 14.065-15.022c-32.132-34.313-84.226-34.311-116.355 0.001z m174.534-0.002c-16.066 17.156-42.113 17.156-58.179 0l-0.001 0.001 0.001 0.001-14.066 15.021-15.021 16.043c32.129 34.31 84.224 34.312 116.356-0.002v0.002c16.066-17.158 42.113-17.16 58.179-0.002l29.089-31.064c-32.132-34.314-84.226-34.314-116.358 0z"
-                fill="#5E9DF3" p-id="17509"></path>
-              <path
-                d="M511.996 98.228c34.403 0 62.294 27.889 62.294 62.294s-27.891 62.294-62.294 62.294c-34.405 0-62.294-27.889-62.294-62.294s27.889-62.294 62.294-62.294z"
-                fill="#3080EE" p-id="17510"></path>
-            </svg>
-            <span class="data-title">水温监测</span>
-          </div>
-          <div class="data-value" :style="{ color: isTempWarning ? '#ff0000' : '#1AFA29' }">
-            {{ waterTemperature.toFixed(1) }}
-            <span class="data-unit">°C</span>
-          </div>
-        </div>
-
+        <!-- ph值卡片 -->
         <div class="data-card">
           <div class="data-header">
             <svg t="1740890043989" class="data-icon" viewBox="0 0 1024 1024" version="1.1"
@@ -365,16 +375,37 @@ watch(isDialogVisible, async (visible) => {
             <span class="data-unit">pH</span>
           </div>
         </div>
+        <!-- 水温卡片 -->
+        <div class="data-card" :class="{ 'warning-active': isTempWarning }">
+          <div class="data-header">
+            <svg t="1740889995163" class="data-icon" viewBox="0 0 1024 1024" version="1.1"
+              xmlns="http://www.w3.org/2000/svg" p-id="17508" width="50" height="50">
+              <path
+                d="M511.996 804.211c68.808 0 124.587-55.781 124.587-124.589 0-46.114-25.055-86.374-62.292-107.917v-37.437h41.53c22.935 0 41.53-18.593 41.53-41.53s-18.595-41.53-41.53-41.53h-41.53v-41.53h20.763c22.937 0 41.53-18.593 41.53-41.53s-18.593-41.53-41.53-41.53h-20.763v-41.53h20.763c22.937 0 41.53-18.593 41.53-41.53s-18.593-41.53-41.53-41.53h-20.763v-41.53c0-34.405-27.891-62.294-62.294-62.294-34.405 0-62.294 27.889-62.294 62.294v411.203c-37.239 21.542-62.294 61.802-62.294 107.917-0.002 68.813 55.779 124.593 124.587 124.593z m311.473-145.354c-11.471 0-20.767 9.296-20.767 20.765 0 22.935-18.593 41.53-41.528 41.53-22.937 0-41.53-18.595-41.53-41.53 0-11.468-9.298-20.765-20.767-20.765-11.468 0-20.763 9.296-20.763 20.765 0 45.872 37.186 83.059 83.059 83.059 45.872 0 83.057-37.188 83.057-83.059 0.001-11.468-9.295-20.765-20.761-20.765z m-519.123 83.058c0 11.468 9.296 20.767 20.765 20.767 11.468 0 20.765-9.298 20.765-20.767 0-45.872-37.188-83.057-83.059-83.057-45.872 0-83.059 37.186-83.059 83.057 0 11.468 9.296 20.767 20.765 20.767 11.47 0 20.765-9.298 20.765-20.767 0-22.935 18.593-41.528 41.53-41.528s41.528 18.593 41.528 41.528z m421.337 129.479c-16.066 17.156-42.115 17.156-58.179 0l-29.089 31.066c32.129 34.31 84.224 34.312 116.356-0.002 8.034-8.578 8.034-22.486 0-31.064-8.035-8.58-21.056-8.578-29.088 0z m-349.071 0.002v-0.002l-0.002 0.002c-16.066 17.158-42.113 17.158-58.179 0-8.034-8.578-21.055-8.578-29.089 0-8.032 8.578-8.034 22.486 0 31.064 32.131 34.314 84.226 34.314 116.358 0v-0.002c16.066-17.154 42.113-17.154 58.179 0.002l15.023-16.043 14.065-15.022c-32.132-34.313-84.226-34.311-116.355 0.001z m174.534-0.002c-16.066 17.156-42.113 17.156-58.179 0l-0.001 0.001 0.001 0.001-14.066 15.021-15.021 16.043c32.129 34.31 84.224 34.312 116.356-0.002v0.002c16.066-17.158 42.113-17.16 58.179-0.002l29.089-31.064c-32.132-34.314-84.226-34.314-116.358 0z"
+                fill="#5E9DF3" p-id="17509"></path>
+              <path
+                d="M511.996 98.228c34.403 0 62.294 27.889 62.294 62.294s-27.891 62.294-62.294 62.294c-34.405 0-62.294-27.889-62.294-62.294s27.889-62.294 62.294-62.294z"
+                fill="#3080EE" p-id="17510"></path>
+            </svg>
+            <span class="data-title">水温监测</span>
+          </div>
+          <div class="data-value" :style="{ color: isTempWarning ? '#ff0000' : '#1AFA29' }">
+            {{ waterTemperature.toFixed(1) }}
+            <span class="data-unit">°C</span>
+          </div>
+        </div>
       </div>
 
       <div class="chart-container">
-        <div class="chart-box" @click="handleChartClick('temperature')"
-          :style="{ borderColor: isTempWarning ? '#ff0000' : 'rgba(0, 247, 255, 0.2)' }">
-          <div ref="tempChartRef" class="chart"></div>
-        </div>
         <div class="chart-box" @click="handleChartClick('ph')">
           <div ref="phChartRef" class="chart"></div>
         </div>
+
+        <div class="chart-box" @click="handleChartClick('temperature')"
+          :style="{ borderColor: isTempWarning ? chartBorderColor.warning : chartBorderColor.normal }">
+          <div ref="tempChartRef" class="chart"></div>
+        </div>
+        
       </div>
     </div>
 

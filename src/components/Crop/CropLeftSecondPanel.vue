@@ -285,7 +285,7 @@ onUnmounted(() => {
 
 <style scoped>
 .panel-box {
-  background: rgba(9, 44, 88, 0.7);
+  /* background: rgba(9, 44, 88, 0.7); */
   padding: 20px;
   border-radius: 12px;
   border: 1px solid rgba(0, 180, 255, 0.3);
@@ -299,7 +299,7 @@ onUnmounted(() => {
 }
 
 .chart-container {
-  height: 360px;
+  height: 380px;
   background: rgba(9, 44, 88, 0.4);
   border-radius: 8px;
   overflow: hidden;
