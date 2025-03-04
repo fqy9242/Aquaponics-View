@@ -29,7 +29,7 @@ const switchTab = (index) => {
       router.push('/fish');
       break;
     case 2:
-      router.push('/agriculture');
+      router.push('/crop');
       break;
   }
 };
@@ -99,12 +99,11 @@ setInterval(() => {
   /* 渐变文字效果，更清晰些 */
   background: linear-gradient(90deg, rgba(0,247,255,0.9), rgba(18,150,219,0.9), rgba(26,250,41,0.9));
   -webkit-background-clip: text;
-  -webkit-text-fill-color: initial;  /* 使用初始颜色作为备选 */
+  -webkit-text-fill-color: initial;  
   color: white;  /* 默认颜色 */
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* 新增样式：日期和时间左右分布 */
 .date-time {
   display: flex;
   justify-content: space-between;
@@ -117,7 +116,6 @@ setInterval(() => {
 .current-date, .current-time {
   margin-top: -50px;  
   font-family: 'DigifaceWide', sans-serif;
-    /* 推荐使用科技感字体 */
     font-size: 1.8em;
     font-weight: 500;
     letter-spacing: 2px;

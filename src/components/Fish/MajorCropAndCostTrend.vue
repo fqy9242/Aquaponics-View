@@ -120,7 +120,6 @@ onUnmounted(() => {
 
 <template>
     <div class="panel-box water-quality-panel">
-        <!-- 新增统一标题容器 -->
         <div class="header-row">
             <div class="left-header">
                 <svg t="1740987900343" class="icon" viewBox="0 0 1170 1024" version="1.1"
@@ -202,7 +201,7 @@ onUnmounted(() => {
 
 <style scoped>
 .panel-box {
-    background: rgba(9, 44, 88, 0.7);
+    /* background: rgba(9, 44, 88, 0.7); */
     border: 1px solid rgba(0, 180, 255, 0.2);
     border-radius: 8px;
     padding: 20px;

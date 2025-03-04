@@ -1,7 +1,7 @@
 /**
- * 获取传感器数据
+ * 获取传感器数据公共方法
  * @author qht
- * @Date 2021-03-10
+ * @Date 2021-03-03
  */
 import { reactive } from "vue";
 import config from "@/../config.json";
@@ -76,7 +76,11 @@ function connectWebSocket() {
   };
 
   ws.onerror = (error) => {
-        console.log("获取传感器WebSocket连接失败。。。");
+    // 连接断开 => 尝试重连
+    console.log("获取传感器WebSocket连接断开,正在尝试重新连接。。。");
+    connectionInitiated = false;
+    // 每3秒重连一次
+    setTimeout(connectWebSocket, 3000);
   };
 }
 
