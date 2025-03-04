@@ -21,12 +21,17 @@ const timeData = ref(Array(20).fill(new Date().getSeconds()))
 
 // 水温报警状态及阈值
 const isTempWarning = ref(false)
-const tempThreshold = 36
+const tempThreshold = 35
 // 关闭水温报警阈值
-const closeTempThreshold = 32
+const closeTempThreshold = 33
 let warningNotification = null
+// 折线图边框颜色
+const chartBorderColor = {
+  normal: 'rgba(0, 247, 255, 0.2)', // 正常状态 => 蓝色
+  warning: '#ff0000'  // 报警颜色 => 红色
+}
 
-// 传感器连接状态（如果需要，可从公共模块扩充，目前默认已连接）
+// 传感器连接状态
 const senSorConnectStatus = ref(true)
 
 // DOM 引用以及图表实例
@@ -395,10 +400,12 @@ watch(isDialogVisible, async (visible) => {
         <div class="chart-box" @click="handleChartClick('ph')">
           <div ref="phChartRef" class="chart"></div>
         </div>
+
         <div class="chart-box" @click="handleChartClick('temperature')"
-          :style="{ borderColor: isTempWarning ? '#ff0000' : 'rgba(0, 247, 255, 0.2)' }">
+          :style="{ borderColor: isTempWarning ? chartBorderColor.warning : chartBorderColor.normal }">
           <div ref="tempChartRef" class="chart"></div>
         </div>
+        
       </div>
     </div>
 
