@@ -313,8 +313,8 @@ const handleChartClick = (type) => {
   isDialogVisible.value = true
   nextTick(() => {
     if (dialogTempChart && !dialogTempChart.isDisposed()) {
-      const colorConfig = defaultChartColor 
-      if (type === 'temp') {
+      let colorConfig = defaultChartColor 
+      if (type === 'temperature') {
         colorConfig = isTempWarning.value ? tempWarningColor : tempNormalColor
       }
       updateChartColor(dialogTempChart, colorConfig)
@@ -408,7 +408,7 @@ watch(isDialogVisible, async (visible) => {
           <div ref="phChartRef" class="chart"></div>
         </div>
 
-        <div class="chart-box" @click="handleChartClick('temp')"
+        <div class="chart-box" @click="handleChartClick('temperature')"
           :style="{ borderColor: isTempWarning ? chartBorderColor.warning : chartBorderColor.normal }">
           <div ref="tempChartRef" class="chart"></div>
         </div>
@@ -424,7 +424,7 @@ watch(isDialogVisible, async (visible) => {
       </div>
     </div>
 
-    <el-dialog v-model="isDialogVisible" width="70%" :title="dialogChartType === 'temp' ? '水温趋势详情' : 'PH值趋势详情'"
+    <el-dialog v-model="isDialogVisible" width="70%" :title="dialogChartType === 'temperature' ? '水温趋势详情' : 'PH值趋势详情'"
       center>
       <div ref="dialogTempChartRef" class="dialog-chart"></div>
       <template #footer>
