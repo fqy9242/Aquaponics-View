@@ -298,6 +298,8 @@ onBeforeRouteUpdate(async (to, from, next) => {
   await safeInitCharts()
   next()
 })
+
+
 // 默认图表颜色配置
 const defaultChartColor = {
   line: '#1AFA29',
@@ -305,16 +307,15 @@ const defaultChartColor = {
   areaEnd: 'rgba(26, 250, 41, 0)'
 }
 
-
 // 点击图表时显示对话框
 const handleChartClick = (type) => {
   dialogChartType.value = type
   isDialogVisible.value = true
   nextTick(() => {
     if (dialogTempChart && !dialogTempChart.isDisposed()) {
-      const colorConfig =  defaultChartColor
+      const colorConfig = defaultChartColor 
       if (type === 'temp') {
-        colorConfig = isTempWarning.value ? tempWarningColor: tempNormalColor
+        colorConfig = isTempWarning.value ? tempWarningColor : tempNormalColor
       }
       updateChartColor(dialogTempChart, colorConfig)
     }
@@ -411,7 +412,7 @@ watch(isDialogVisible, async (visible) => {
           :style="{ borderColor: isTempWarning ? chartBorderColor.warning : chartBorderColor.normal }">
           <div ref="tempChartRef" class="chart"></div>
         </div>
-        
+
       </div>
     </div>
 
@@ -423,7 +424,7 @@ watch(isDialogVisible, async (visible) => {
       </div>
     </div>
 
-    <el-dialog v-model="isDialogVisible" width="70%" :title="dialogChartType === 'temperature' ? '水温趋势详情' : 'PH值趋势详情'"
+    <el-dialog v-model="isDialogVisible" width="70%" :title="dialogChartType === 'temp' ? '水温趋势详情' : 'PH值趋势详情'"
       center>
       <div ref="dialogTempChartRef" class="dialog-chart"></div>
       <template #footer>
