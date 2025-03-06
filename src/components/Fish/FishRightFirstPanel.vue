@@ -298,6 +298,13 @@ onBeforeRouteUpdate(async (to, from, next) => {
   await safeInitCharts()
   next()
 })
+// 默认图表颜色配置
+const defaultChartColor = {
+  line: '#1AFA29',
+  areaStart: 'rgba(26, 250, 41, 0.3)',
+  areaEnd: 'rgba(26, 250, 41, 0)'
+}
+
 
 // 点击图表时显示对话框
 const handleChartClick = (type) => {
@@ -305,10 +312,9 @@ const handleChartClick = (type) => {
   isDialogVisible.value = true
   nextTick(() => {
     if (dialogTempChart && !dialogTempChart.isDisposed()) {
-      const colorConfig = type === 'temperature' ? (isTempWarning.value ? tempWarningColor : tempNormalColor) : {
-        line: '#1AFA29',
-        areaStart: 'rgba(26, 250, 41, 0.3)',
-        areaEnd: 'rgba(26, 250, 41, 0)'
+      const colorConfig =  defaultChartColor
+      if (type === 'temp') {
+        colorConfig = isTempWarning.value ? tempWarningColor: tempNormalColor
       }
       updateChartColor(dialogTempChart, colorConfig)
     }
@@ -401,7 +407,7 @@ watch(isDialogVisible, async (visible) => {
           <div ref="phChartRef" class="chart"></div>
         </div>
 
-        <div class="chart-box" @click="handleChartClick('temperature')"
+        <div class="chart-box" @click="handleChartClick('temp')"
           :style="{ borderColor: isTempWarning ? chartBorderColor.warning : chartBorderColor.normal }">
           <div ref="tempChartRef" class="chart"></div>
         </div>

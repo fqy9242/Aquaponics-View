@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import * as echarts from 'echarts';
 
-const statisticTime = '2023年3月 - 2023年12月';
+const statisticTime = '2024年3月 - 2025年3月';
 
 onMounted(() => {
   const chartDom = document.getElementById('feed-efficiency-chart');
