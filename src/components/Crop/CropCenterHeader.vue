@@ -57,12 +57,13 @@ const farmMetrics = ref([
 }
 
 .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    display: flex;
     gap: 18px;
+    flex-wrap: nowrap;
 }
 
 .metric-card {
+    flex: 1;
     position: relative;
     padding: 20px;
     border-radius: 10px;

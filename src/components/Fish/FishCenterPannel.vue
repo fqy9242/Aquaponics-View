@@ -17,14 +17,14 @@ const waterQualityClass = (quality) => {
     }
 };
 const campuses = [
-    { id: 1, name: '南宁-园区A' },
+    { id: 1, name: '城市A-园区A' },
     { id: 2, name: '柳州-生态园' },
     { id: 3, name: '桂林-漓江基地' }
 ];
 </script>
 
 <template>
-    <div class="panel-box water-quality-panel">
+    <div class="panel-box">
         <select class="campus-selector">
             <option v-for="camp in campuses" :key="camp.id" :value="camp.id">{{ camp.name }}</option>
         </select>
@@ -213,7 +213,7 @@ const campuses = [
 }
 
 .panel-box {
-    height: 1130px;
+    height: 1139px;
     background: linear-gradient(180deg, #0a1a2d 0%, #0c2b4d 100%);
     padding: 20px;
     border-radius: 16px;

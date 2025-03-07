@@ -164,14 +164,14 @@ onMounted(() => {
     };
     chart.setOption(option);
 
-    // 增加自适应逻辑
-    const resizeHandler = () => {
-        chart.resize({
-            width: chartRef.value.clientWidth,
-            height: chartRef.value.clientHeight
-        });
-    };
-    window.addEventListener('resize', resizeHandler);
+    // // 增加自适应逻辑
+    // const resizeHandler = () => {
+    //     chart.resize({
+    //         width: chartRef.value.clientWidth,
+    //         height: chartRef.value.clientHeight
+    //     });
+    // };
+    // window.addEventListener('resize', resizeHandler);
 });
 </script>
 

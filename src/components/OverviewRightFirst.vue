@@ -54,12 +54,13 @@ onMounted(() => {
   createChart(abnormalEventsRef.value, '异常事件数量', 10, '#FF6F61', false);
   createChart(oeeRef.value, '设备综合效率（OEE）', 92, '#5AE27C');
 
-  // 自适应窗口
-  window.addEventListener('resize', () => {
-    echarts.getInstanceByDom(totalProductionRef.value).resize();
-    echarts.getInstanceByDom(abnormalEventsRef.value).resize();
-    echarts.getInstanceByDom(oeeRef.value).resize();
-  });
+  // // 自适应窗口
+  // window.addEventListener('resize', () => {
+  //   echarts.getInstanceByDom(totalProductionRef.value).resize();
+  //   echarts.getInstanceByDom(abnormalEventsRef.value).resize();
+  //   echarts.getInstanceByDom(oeeRef.value).resize();
+  // });
+
 });
 
 onBeforeUnmount(() => {
