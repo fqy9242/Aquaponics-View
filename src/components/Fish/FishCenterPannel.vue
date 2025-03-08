@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 const pools = ref([
-    { id: 1, name: '鱼池1', fishName: '罗非鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.2 },
+    { id: 1, name: '鱼池1', fishName: '黑鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 25, ph: 7.2 },
     { id: 2, name: '鱼池2', fishName: '鲤鱼', fishStatus: '成鱼', waterQuality: '良好', temperature: 22, ph: 6.8 },
     { id: 3, name: '鱼池3', fishName: '鲫鱼', fishStatus: '幼鱼', waterQuality: '优良', temperature: 26, ph: 7.5 },
     { id: 4, name: '鱼池4', fishName: '草鱼', fishStatus: '成鱼', waterQuality: '一般', temperature: 24, ph: 6.5 },
