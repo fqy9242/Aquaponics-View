@@ -231,14 +231,15 @@ const campuses = [
 }
 
 .pool-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 25px;
     padding: 20px;
     margin-top: 20px;
 }
 
 .pool-item {
+    flex: 0 0 calc((100% - 50px) / 3);
     position: relative;
     height: 350px;
     border-radius: 20px;
