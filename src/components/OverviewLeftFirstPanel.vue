@@ -2,8 +2,8 @@
 import { ref } from 'vue'
 
 // 固定数据
-const totalPlantingArea = ref(5000)
-const totalBreedingArea = ref(2000)
+const totalPlantingArea = ref(5124)
+const totalBreedingArea = ref(2312)
 const plantingAreaGrowth = ref(5)
 const breedingAreaGrowth = ref(-3)
 

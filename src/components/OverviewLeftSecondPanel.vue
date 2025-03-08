@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts'
-
 // 固定数据
-const vegetableYieldForecast = ref([70, 80, 90, 100, 110, 120, 130, 140, 150, 160])
-const fishYieldForecast = ref([35, 40, 45, 50, 55, 60, 65, 70, 75, 80])
+const vegetableYieldForecast = ref([72, 85, 88, 71, 63, 112, 98, 147, 158, 162])
+const fishYieldForecast = ref([37, 30, 31, 42, 47, 33, 36, 51, 54, 65])
 
 // 图表实例和监听器引用
 let myChart = null

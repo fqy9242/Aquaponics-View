@@ -27,14 +27,14 @@ const indicators = ref({
     bases: 15,
     fishTypes: 18,
     vegTypes: 19,
-    area: '2,000',
-    seedlings: '500',
-    planting: '8,00',
-    waterSave: '9,000',
-    fertilizerReduce: '2,000',
-    economy: '6,000',
-    fishOutput: '900',
-    vegOutput: '300'
+    area: '2,123',
+    seedlings: '512',
+    planting: '8,10',
+    waterSave: '9,325',
+    fertilizerReduce: '2,121',
+    economy: '6,312',
+    fishOutput: '912',
+    vegOutput: '331'
 })
 
 let chartInstance = null

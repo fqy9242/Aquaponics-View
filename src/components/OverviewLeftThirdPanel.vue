@@ -4,10 +4,10 @@ import * as echarts from 'echarts'
 
 // 鱼种养殖数据
 const fishData = ref([
-  { name: '罗非鱼养殖', value: 3200 },
-  { name: '草鱼养殖', value: 2800 },
-  { name: '鲈鱼养殖', value: 2400 },
-  { name: '鲤鱼养殖', value: 1800 }
+  { name: '罗非鱼养殖', value: 3221 },
+  { name: '草鱼养殖', value: 2812 },
+  { name: '鲈鱼养殖', value: 2434 },
+  { name: '鲤鱼养殖', value: 1843 }
 ])
 
 // 蔬菜种植数据
